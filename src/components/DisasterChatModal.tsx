@@ -1,5 +1,10 @@
 import React, { useState } from "react";
+import { motion, AnimatePresence } from "motion/react";
 import { CycloneSystem, SurgeMetrics, RainfallMetrics } from "../types/cyclone";
+import ChatBubbleOutlineRounded from "@mui/icons-material/ChatBubbleOutlineRounded";
+import SendRounded from "@mui/icons-material/SendRounded";
+import CloseRounded from "@mui/icons-material/CloseRounded";
+import AutoAwesomeRounded from "@mui/icons-material/AutoAwesomeRounded";
 
 interface DisasterChatModalProps {
   isOpen: boolean;
@@ -74,7 +79,7 @@ export const DisasterChatModal: React.FC<DisasterChatModalProps> = ({
         timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
       };
       setMessages((prev) => [...prev, aiReply]);
-    } catch (err) {
+    } catch {
       setMessages((prev) => [
         ...prev,
         {
@@ -90,14 +95,26 @@ export const DisasterChatModal: React.FC<DisasterChatModalProps> = ({
 
   return (
     <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4">
-      <div className="bg-white border-2 border-sky-100 rounded-3xl max-w-2xl w-full h-[600px] flex flex-col overflow-hidden text-xs font-sans shadow-2xl">
+      <motion.div
+        initial={{ opacity: 0, scale: 0.95, y: 10 }}
+        animate={{ opacity: 1, scale: 1, y: 0 }}
+        exit={{ opacity: 0, scale: 0.95, y: 10 }}
+        transition={{ duration: 0.25 }}
+        className="bg-white border-2 border-sky-100 rounded-3xl max-w-2xl w-full h-[600px] flex flex-col overflow-hidden text-xs font-sans shadow-2xl"
+      >
         {/* Header */}
         <div className="p-4 border-b border-slate-100 flex items-center justify-between bg-sky-50/70">
           <div className="flex items-center gap-2.5">
-            <span className="text-2xl p-2 rounded-xl bg-white shadow-xs">💬</span>
+            <div className="p-2.5 rounded-2xl bg-white shadow-xs text-sky-600">
+              <ChatBubbleOutlineRounded fontSize="medium" />
+            </div>
             <div>
-              <h3 className="font-bold text-slate-900 text-sm sm:text-base">
-                Friendly Storm Safety Guide
+              <h3 className="font-extrabold text-slate-900 text-sm sm:text-base flex items-center gap-1.5">
+                <span>Friendly Storm Safety Guide</span>
+                <span className="text-[10px] bg-sky-100 text-sky-800 font-bold px-2 py-0.5 rounded-full flex items-center gap-0.5">
+                  <AutoAwesomeRounded fontSize="inherit" />
+                  <span>Gemini AI</span>
+                </span>
               </h3>
               <p className="text-xs text-sky-700">
                 Ask questions about cyclone science, weather, and staying safe!
@@ -108,15 +125,17 @@ export const DisasterChatModal: React.FC<DisasterChatModalProps> = ({
             onClick={onClose}
             className="text-slate-400 hover:text-slate-700 w-8 h-8 rounded-full hover:bg-white flex items-center justify-center text-sm font-bold cursor-pointer transition-colors"
           >
-            ✕
+            <CloseRounded fontSize="small" />
           </button>
         </div>
 
         {/* Message Log */}
         <div className="flex-1 p-4 overflow-y-auto space-y-3.5 bg-slate-50/50">
           {messages.map((m, i) => (
-            <div
+            <motion.div
               key={i}
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
               className={`flex ${m.sender === "user" ? "justify-end" : "justify-start"}`}
             >
               <div
@@ -131,7 +150,7 @@ export const DisasterChatModal: React.FC<DisasterChatModalProps> = ({
                   {m.timestamp}
                 </div>
               </div>
-            </div>
+            </motion.div>
           ))}
 
           {isSending && (
@@ -146,13 +165,15 @@ export const DisasterChatModal: React.FC<DisasterChatModalProps> = ({
         <div className="px-4 py-2 border-t border-slate-100 bg-white flex items-center gap-2 overflow-x-auto no-scrollbar text-xs">
           <span className="font-bold text-slate-500 shrink-0 text-[11px]">Ideas:</span>
           {quickPrompts.map((qp, idx) => (
-            <button
+            <motion.button
               key={idx}
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
               onClick={() => handleSend(qp)}
               className="px-3 py-1 rounded-full bg-sky-50 hover:bg-sky-100 text-sky-800 border border-sky-200 text-xs font-semibold whitespace-nowrap cursor-pointer transition-colors"
             >
               {qp}
-            </button>
+            </motion.button>
           ))}
         </div>
 
@@ -171,15 +192,18 @@ export const DisasterChatModal: React.FC<DisasterChatModalProps> = ({
             onChange={(e) => setInputText(e.target.value)}
             className="flex-1 bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2 text-xs sm:text-sm text-slate-800 focus:outline-none focus:border-sky-500 font-medium"
           />
-          <button
+          <motion.button
+            whileHover={{ scale: 1.03 }}
+            whileTap={{ scale: 0.97 }}
             type="submit"
             disabled={!inputText.trim() || isSending}
-            className="px-4 py-2 bg-sky-600 hover:bg-sky-700 text-white rounded-xl text-xs sm:text-sm font-bold transition-all disabled:opacity-50 cursor-pointer shadow-xs"
+            className="px-4 py-2 bg-sky-600 hover:bg-sky-700 text-white rounded-xl text-xs sm:text-sm font-bold transition-all disabled:opacity-50 cursor-pointer shadow-xs flex items-center gap-1"
           >
-            Send
-          </button>
+            <SendRounded fontSize="small" />
+            <span>Send</span>
+          </motion.button>
         </form>
-      </div>
+      </motion.div>
     </div>
   );
 };

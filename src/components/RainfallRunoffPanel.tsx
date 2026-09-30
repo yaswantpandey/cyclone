@@ -1,5 +1,13 @@
 import React from "react";
+import { motion } from "motion/react";
 import { RainfallMetrics, CycloneSystem } from "../types/cyclone";
+import WaterDropRounded from "@mui/icons-material/WaterDropRounded";
+import OpacityRounded from "@mui/icons-material/OpacityRounded";
+import WarningAmberRounded from "@mui/icons-material/WarningAmberRounded";
+import DirectionsCarRounded from "@mui/icons-material/DirectionsCarRounded";
+import LandscapeRounded from "@mui/icons-material/LandscapeRounded";
+import TrendingUpRounded from "@mui/icons-material/TrendingUpRounded";
+import AltRouteRounded from "@mui/icons-material/AltRouteRounded";
 
 interface RainfallRunoffPanelProps {
   cyclone: CycloneSystem;
@@ -11,13 +19,21 @@ export const RainfallRunoffPanel: React.FC<RainfallRunoffPanelProps> = ({
   rainfallMetrics,
 }) => {
   return (
-    <div className="space-y-4 text-xs font-sans">
+    <motion.div
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: -10 }}
+      transition={{ duration: 0.3 }}
+      className="space-y-4 text-xs font-sans"
+    >
       {/* Friendly Overview Banner */}
-      <div className="bg-white border-2 border-teal-100 rounded-2xl p-4 shadow-xs">
-        <div className="flex items-center gap-2.5">
-          <span className="text-2xl">🌧️</span>
+      <div className="bg-white border-2 border-teal-100 rounded-3xl p-4 sm:p-5 shadow-xs flex items-center justify-between gap-3">
+        <div className="flex items-center gap-3">
+          <div className="p-2.5 bg-teal-100 text-teal-700 rounded-2xl">
+            <WaterDropRounded fontSize="medium" />
+          </div>
           <div>
-            <h2 className="font-bold text-slate-900 text-sm sm:text-base">
+            <h2 className="font-extrabold text-slate-900 text-sm sm:text-base">
               Rain & River Flood Watch
             </h2>
             <p className="text-xs text-slate-600 mt-0.5">
@@ -30,9 +46,12 @@ export const RainfallRunoffPanel: React.FC<RainfallRunoffPanelProps> = ({
       {/* 4 Colorful Readout Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5">
         {/* Total Rainfall */}
-        <div className="bg-white border-2 border-teal-200 rounded-2xl p-4 shadow-xs">
+        <motion.div
+          whileHover={{ y: -3, scale: 1.01 }}
+          className="bg-white border-2 border-teal-200 rounded-2xl p-4 shadow-xs"
+        >
           <div className="text-xs font-bold text-teal-700 uppercase tracking-wide flex items-center gap-1.5">
-            <span>🌧️</span>
+            <OpacityRounded fontSize="small" />
             <span>2-Day Total Rain</span>
           </div>
           <div className="mt-1 flex items-baseline gap-1.5">
@@ -44,12 +63,15 @@ export const RainfallRunoffPanel: React.FC<RainfallRunoffPanelProps> = ({
           <p className="mt-1.5 text-xs text-slate-600 leading-snug">
             Heaviest downpours near the storm center: up to {rainfallMetrics.peakRateMmPerHour} mm per hour!
           </p>
-        </div>
+        </motion.div>
 
         {/* Soil Moisture */}
-        <div className="bg-white border-2 border-sky-200 rounded-2xl p-4 shadow-xs">
+        <motion.div
+          whileHover={{ y: -3, scale: 1.01 }}
+          className="bg-white border-2 border-sky-200 rounded-2xl p-4 shadow-xs"
+        >
           <div className="text-xs font-bold text-sky-700 uppercase tracking-wide flex items-center gap-1.5">
-            <span>🧽</span>
+            <LandscapeRounded fontSize="small" />
             <span>Ground Sponge Level</span>
           </div>
           <div className="mt-1 flex items-baseline gap-1.5">
@@ -59,20 +81,25 @@ export const RainfallRunoffPanel: React.FC<RainfallRunoffPanelProps> = ({
             <span className="text-xs text-slate-500 font-semibold">Soaked</span>
           </div>
           <div className="w-full bg-slate-200 h-2 rounded-full mt-2.5 overflow-hidden">
-            <div
+            <motion.div
+              initial={{ width: 0 }}
+              animate={{ width: `${rainfallMetrics.soilSaturationPercent}%` }}
+              transition={{ duration: 0.8, ease: "easeOut" }}
               className="bg-sky-500 h-full rounded-full"
-              style={{ width: `${rainfallMetrics.soilSaturationPercent}%` }}
             />
           </div>
           <p className="mt-1.5 text-xs text-slate-600 leading-snug">
             The soil is almost completely full, so rain runs straight into rivers and creeks.
           </p>
-        </div>
+        </motion.div>
 
         {/* River Spills */}
-        <div className="bg-rose-50 border-2 border-rose-300 rounded-2xl p-4 shadow-xs">
+        <motion.div
+          whileHover={{ y: -3, scale: 1.01 }}
+          className="bg-rose-50 border-2 border-rose-300 rounded-2xl p-4 shadow-xs"
+        >
           <div className="text-xs font-bold text-rose-800 uppercase tracking-wide flex items-center gap-1.5">
-            <span>🏞️</span>
+            <WarningAmberRounded fontSize="small" />
             <span>Rivers Overflowing</span>
           </div>
           <div className="mt-1 flex items-baseline gap-1.5">
@@ -84,12 +111,15 @@ export const RainfallRunoffPanel: React.FC<RainfallRunoffPanelProps> = ({
           <p className="mt-1.5 text-xs text-rose-800 leading-snug font-medium">
             High tide at the coast blocks river mouths, causing water to back up upstream!
           </p>
-        </div>
+        </motion.div>
 
         {/* Road Choke Points */}
-        <div className="bg-white border-2 border-amber-200 rounded-2xl p-4 shadow-xs">
+        <motion.div
+          whileHover={{ y: -3, scale: 1.01 }}
+          className="bg-white border-2 border-amber-200 rounded-2xl p-4 shadow-xs"
+        >
           <div className="text-xs font-bold text-amber-700 uppercase tracking-wide flex items-center gap-1.5">
-            <span>🚗</span>
+            <DirectionsCarRounded fontSize="small" />
             <span>Low Road Underpasses</span>
           </div>
           <div className="mt-1 flex items-baseline gap-1.5">
@@ -101,24 +131,24 @@ export const RainfallRunoffPanel: React.FC<RainfallRunoffPanelProps> = ({
           <p className="mt-1.5 text-xs text-slate-600 leading-snug">
             Low highway sections where water pools quickly. Emergency pumps are being set up.
           </p>
-        </div>
+        </motion.div>
       </div>
 
       {/* River Gauges and Road Safety Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
         {/* River Gauges */}
-        <div className="bg-white border-2 border-slate-200 rounded-2xl p-4 sm:p-5 shadow-xs">
+        <div className="bg-white border-2 border-slate-200 rounded-3xl p-4 sm:p-5 shadow-xs">
           <div className="flex items-center justify-between border-b border-slate-100 pb-2.5 mb-3">
             <div>
               <span className="font-bold text-slate-900 text-sm flex items-center gap-1.5">
-                <span>🏞️</span>
+                <TrendingUpRounded className="text-teal-600" fontSize="small" />
                 <span>River Water Height Meters</span>
               </span>
               <p className="text-xs text-slate-500 mt-0.5">
                 Live measurements showing water height compared to flood banks
               </p>
             </div>
-            <span className="text-xs font-bold text-teal-700 bg-teal-50 px-2 py-0.5 rounded-full border border-teal-200">
+            <span className="text-xs font-bold text-teal-700 bg-teal-50 px-2.5 py-0.5 rounded-full border border-teal-200">
               Active Gauges
             </span>
           </div>
@@ -129,9 +159,10 @@ export const RainfallRunoffPanel: React.FC<RainfallRunoffPanelProps> = ({
               const isBreaching = river.status === "Breaching";
 
               return (
-                <div
+                <motion.div
                   key={idx}
-                  className="p-3 rounded-xl border border-slate-200 bg-slate-50/70"
+                  whileHover={{ scale: 1.01 }}
+                  className="p-3.5 rounded-2xl border border-slate-200 bg-slate-50/70"
                 >
                   <div className="flex items-baseline justify-between mb-1">
                     <span className="font-bold text-slate-900 text-xs sm:text-sm">{river.river}</span>
@@ -154,30 +185,32 @@ export const RainfallRunoffPanel: React.FC<RainfallRunoffPanelProps> = ({
                   </div>
 
                   <div className="w-full bg-slate-200 h-2.5 rounded-full overflow-hidden">
-                    <div
+                    <motion.div
+                      initial={{ width: 0 }}
+                      animate={{ width: `${Math.min(100, (river.currentLevelM / (river.dangerLevelM * 1.05)) * 100)}%` }}
+                      transition={{ duration: 0.6, ease: "easeOut" }}
                       className={`h-full rounded-full transition-all ${
                         isBreaching ? "bg-rose-500" : river.status === "Critical" ? "bg-amber-500" : "bg-teal-500"
                       }`}
-                      style={{ width: `${Math.min(100, (river.currentLevelM / (river.dangerLevelM * 1.05)) * 100)}%` }}
                     />
                   </div>
-                </div>
+                </motion.div>
               );
             })}
           </div>
 
-          <div className="mt-4 p-3 rounded-xl bg-sky-50 border border-sky-200 text-xs text-sky-900 leading-snug">
+          <div className="mt-4 p-3.5 rounded-2xl bg-sky-50 border border-sky-200 text-xs text-sky-900 leading-snug">
             <strong>Why River Water Backs Up:</strong> High ocean waves at the river mouth act like a closed gate, stopping the river from emptying into the sea and causing water to back up onto riverside roads.
           </div>
         </div>
 
         {/* Road Choke Points */}
-        <div className="bg-white border-2 border-slate-200 rounded-2xl p-4 sm:p-5 shadow-xs flex flex-col justify-between">
+        <div className="bg-white border-2 border-slate-200 rounded-3xl p-4 sm:p-5 shadow-xs flex flex-col justify-between">
           <div>
             <div className="flex items-center justify-between border-b border-slate-100 pb-2.5 mb-3">
               <div>
                 <span className="font-bold text-slate-900 text-sm flex items-center gap-1.5">
-                  <span>🛣️</span>
+                  <AltRouteRounded className="text-amber-600" fontSize="small" />
                   <span>Highway Dips & Evacuation Roads</span>
                 </span>
                 <p className="text-xs text-slate-500 mt-0.5">
@@ -188,9 +221,10 @@ export const RainfallRunoffPanel: React.FC<RainfallRunoffPanelProps> = ({
 
             <div className="space-y-2.5">
               {(rainfallMetrics?.flashFloodChokePoints || []).map((choke, i) => (
-                <div
+                <motion.div
                   key={i}
-                  className="p-3 rounded-xl bg-slate-50 border border-slate-200 hover:border-amber-300 transition-colors flex items-start justify-between text-xs"
+                  whileHover={{ scale: 1.01 }}
+                  className="p-3.5 rounded-2xl bg-slate-50 border border-slate-200 hover:border-amber-300 transition-colors flex items-start justify-between text-xs"
                 >
                   <div>
                     <div className="font-bold text-slate-900 text-xs">{choke.location}</div>
@@ -199,7 +233,7 @@ export const RainfallRunoffPanel: React.FC<RainfallRunoffPanelProps> = ({
                     </div>
                   </div>
                   <span
-                    className={`text-xs font-bold px-2 py-0.5 rounded-full ${
+                    className={`text-xs font-bold px-2.5 py-0.5 rounded-full ${
                       choke.riskLevel === "Critical"
                         ? "bg-rose-100 text-rose-800 border border-rose-300"
                         : "bg-amber-100 text-amber-800 border border-amber-300"
@@ -207,16 +241,16 @@ export const RainfallRunoffPanel: React.FC<RainfallRunoffPanelProps> = ({
                   >
                     {choke.riskLevel === "Critical" ? "⚠️ Needs Pump" : "👀 Watching"}
                   </span>
-                </div>
+                </motion.div>
               ))}
             </div>
           </div>
 
-          <div className="mt-4 p-3 rounded-xl bg-amber-50 border border-amber-200 text-xs text-amber-900 leading-snug">
+          <div className="mt-4 p-3.5 rounded-2xl bg-amber-50 border border-amber-200 text-xs text-amber-900 leading-snug">
             <strong>Safe Road Tip for Families:</strong> "Turn around, don't drown!" Never walk or drive across moving water. Road rescue crews have already parked giant dewatering pumps along National Highway 16 to keep rescue lanes open.
           </div>
         </div>
       </div>
-    </div>
+    </motion.div>
   );
 };

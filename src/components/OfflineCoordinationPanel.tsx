@@ -1,5 +1,15 @@
 import React, { useState } from "react";
+import { motion } from "motion/react";
 import { OfflineActionTask, OutboxRadioMessage, CycloneSystem, SurgeMetrics, RainfallMetrics } from "../types/cyclone";
+import BackpackRounded from "@mui/icons-material/BackpackRounded";
+import RadioRounded from "@mui/icons-material/RadioRounded";
+import AddRounded from "@mui/icons-material/AddRounded";
+import SendRounded from "@mui/icons-material/SendRounded";
+import PrintRounded from "@mui/icons-material/PrintRounded";
+import CheckCircleRounded from "@mui/icons-material/CheckCircleRounded";
+import WifiOffRounded from "@mui/icons-material/WifiOffRounded";
+import WifiRounded from "@mui/icons-material/WifiRounded";
+import PersonRounded from "@mui/icons-material/PersonRounded";
 
 interface OfflineCoordinationPanelProps {
   tasks: OfflineActionTask[];
@@ -23,9 +33,6 @@ export const OfflineCoordinationPanel: React.FC<OfflineCoordinationPanelProps> =
   onAddOutboxMessage,
   onTransmitAllQueued,
   isOfflineMode,
-  cyclone,
-  surgeMetrics,
-  rainfallMetrics,
   onExportIAP,
 }) => {
   const [activeFilterCategory, setActiveFilterCategory] = useState<string>("ALL");
@@ -77,24 +84,33 @@ export const OfflineCoordinationPanel: React.FC<OfflineCoordinationPanelProps> =
   };
 
   return (
-    <div className="space-y-4 text-xs font-sans">
+    <motion.div
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: -10 }}
+      transition={{ duration: 0.3 }}
+      className="space-y-4 text-xs font-sans"
+    >
       {/* Friendly Overview Banner */}
-      <div className="bg-white border-2 border-rose-100 rounded-2xl p-4 shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-3">
-        <div className="flex items-center gap-2.5">
-          <span className="text-2xl">🎒</span>
+      <div className="bg-white border-2 border-rose-100 rounded-3xl p-4 sm:p-5 shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-3">
+        <div className="flex items-center gap-3">
+          <div className="p-2.5 bg-rose-100 text-rose-700 rounded-2xl">
+            <BackpackRounded fontSize="medium" />
+          </div>
           <div>
             <div className="flex items-center gap-2">
-              <h2 className="font-bold text-slate-900 text-sm sm:text-base">
+              <h2 className="font-extrabold text-slate-900 text-sm sm:text-base">
                 Emergency Field Kit & Walkie-Talkies
               </h2>
               <span
-                className={`text-xs font-bold px-2.5 py-0.5 rounded-full border ${
+                className={`text-xs font-bold px-2.5 py-0.5 rounded-full border flex items-center gap-1 ${
                   isOfflineMode
                     ? "bg-rose-100 text-rose-800 border-rose-300"
                     : "bg-emerald-100 text-emerald-800 border-emerald-300"
                 }`}
               >
-                {isOfflineMode ? "📡 Offline Mode (Saved on Device)" : "📶 Connected"}
+                {isOfflineMode ? <WifiOffRounded fontSize="inherit" /> : <WifiRounded fontSize="inherit" />}
+                <span>{isOfflineMode ? "Offline Mode (Saved on Device)" : "Connected"}</span>
               </span>
             </div>
             <p className="text-xs text-slate-600 mt-0.5">
@@ -103,24 +119,26 @@ export const OfflineCoordinationPanel: React.FC<OfflineCoordinationPanelProps> =
           </div>
         </div>
 
-        <button
+        <motion.button
+          whileHover={{ scale: 1.03 }}
+          whileTap={{ scale: 0.97 }}
           onClick={onExportIAP}
           className="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-800 border border-slate-300 rounded-xl text-xs font-bold transition-colors cursor-pointer self-start md:self-auto flex items-center gap-1.5"
         >
-          <span>🖨️</span>
+          <PrintRounded fontSize="small" />
           <span>Print Action Plan</span>
-        </button>
+        </motion.button>
       </div>
 
       {/* Main Grid: Task Checklist & Walkie-Talkie Radio */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-4">
         {/* Left Column: Safety Task Checklist */}
-        <div className="lg:col-span-7 bg-white border-2 border-slate-200 rounded-2xl p-5 shadow-xs flex flex-col justify-between">
+        <div className="lg:col-span-7 bg-white border-2 border-slate-200 rounded-3xl p-5 shadow-xs flex flex-col justify-between">
           <div>
             <div className="flex items-center justify-between border-b border-slate-100 pb-3 mb-3">
               <div>
                 <span className="font-bold text-slate-900 text-sm flex items-center gap-1.5">
-                  <span>✅</span>
+                  <CheckCircleRounded className="text-emerald-600" fontSize="small" />
                   <span>Safety Checklist Tasks</span>
                 </span>
                 <p className="text-xs text-slate-500 mt-0.5">
@@ -128,13 +146,15 @@ export const OfflineCoordinationPanel: React.FC<OfflineCoordinationPanelProps> =
                 </p>
               </div>
 
-              <button
+              <motion.button
+                whileHover={{ scale: 1.03 }}
+                whileTap={{ scale: 0.97 }}
                 onClick={() => setShowNewTaskForm(!showNewTaskForm)}
                 className="px-3 py-1.5 bg-sky-50 hover:bg-sky-100 text-sky-800 border border-sky-300 rounded-xl text-xs font-bold transition-colors cursor-pointer flex items-center gap-1"
               >
-                <span>➕</span>
+                <AddRounded fontSize="small" />
                 <span>Add Task</span>
-              </button>
+              </motion.button>
             </div>
 
             {/* Category Filter Pills */}
@@ -143,7 +163,7 @@ export const OfflineCoordinationPanel: React.FC<OfflineCoordinationPanelProps> =
                 <button
                   key={cat}
                   onClick={() => setActiveFilterCategory(cat)}
-                  className={`px-3 py-1 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+                  className={`px-3 py-1 rounded-xl text-xs font-bold transition-all cursor-pointer ${
                     activeFilterCategory === cat
                       ? "bg-sky-600 text-white shadow-xs"
                       : "bg-slate-100 text-slate-600 hover:bg-slate-200"
@@ -208,7 +228,7 @@ export const OfflineCoordinationPanel: React.FC<OfflineCoordinationPanelProps> =
                   </button>
                   <button
                     type="submit"
-                    className="px-4 py-1.5 bg-sky-600 hover:bg-sky-700 text-white rounded-xl text-xs font-bold"
+                    className="px-4 py-1.5 bg-sky-600 hover:bg-sky-700 text-white rounded-xl text-xs font-bold cursor-pointer"
                   >
                     Save Task
                   </button>
@@ -219,10 +239,11 @@ export const OfflineCoordinationPanel: React.FC<OfflineCoordinationPanelProps> =
             {/* Tasks List */}
             <div className="space-y-2 max-h-[380px] overflow-y-auto pr-1">
               {filteredTasks.map((t) => (
-                <div
+                <motion.div
                   key={t.id}
+                  whileHover={{ scale: 1.01 }}
                   onClick={() => onToggleTask(t.id)}
-                  className={`p-3 rounded-xl border-2 transition-all cursor-pointer flex items-center justify-between text-xs ${
+                  className={`p-3 rounded-2xl border-2 transition-all cursor-pointer flex items-center justify-between text-xs ${
                     t.completed
                       ? "bg-emerald-50/60 border-emerald-300 opacity-80"
                       : "bg-slate-50 border-slate-200 hover:border-sky-300"
@@ -240,7 +261,10 @@ export const OfflineCoordinationPanel: React.FC<OfflineCoordinationPanelProps> =
                         {t.task}
                       </div>
                       <div className="text-[11px] text-slate-500 mt-0.5 flex items-center gap-2">
-                        <span>👤 {t.assignedTo}</span>
+                        <span className="flex items-center gap-0.5">
+                          <PersonRounded fontSize="inherit" />
+                          <span>{t.assignedTo}</span>
+                        </span>
                         <span>·</span>
                         <span className="bg-sky-100 text-sky-800 px-1.5 py-0.2 rounded font-semibold text-[10px]">
                           {t.timeframe}
@@ -251,8 +275,9 @@ export const OfflineCoordinationPanel: React.FC<OfflineCoordinationPanelProps> =
 
                   <div>
                     {t.completed ? (
-                      <span className="text-[10px] font-bold text-emerald-800 bg-emerald-100 border border-emerald-300 px-2 py-0.5 rounded-full">
-                        Done!
+                      <span className="text-[10px] font-bold text-emerald-800 bg-emerald-100 border border-emerald-300 px-2 py-0.5 rounded-full flex items-center gap-0.5">
+                        <CheckCircleRounded fontSize="inherit" />
+                        <span>Done!</span>
                       </span>
                     ) : (
                       <span className="text-[10px] font-bold text-amber-800 bg-amber-100 border border-amber-300 px-2 py-0.5 rounded-full">
@@ -260,19 +285,19 @@ export const OfflineCoordinationPanel: React.FC<OfflineCoordinationPanelProps> =
                       </span>
                     )}
                   </div>
-                </div>
+                </motion.div>
               ))}
             </div>
           </div>
         </div>
 
         {/* Right Column: Walkie-Talkie Radio Outbox */}
-        <div className="lg:col-span-5 bg-white border-2 border-slate-200 rounded-2xl p-5 shadow-xs flex flex-col justify-between">
+        <div className="lg:col-span-5 bg-white border-2 border-slate-200 rounded-3xl p-5 shadow-xs flex flex-col justify-between">
           <div>
             <div className="flex items-center justify-between border-b border-slate-100 pb-3 mb-3">
               <div>
                 <span className="font-bold text-slate-900 text-sm flex items-center gap-1.5">
-                  <span>📻</span>
+                  <RadioRounded className="text-sky-600" fontSize="small" />
                   <span>Walkie-Talkie Radio Outbox</span>
                 </span>
                 <p className="text-xs text-slate-500 mt-0.5">
@@ -281,13 +306,15 @@ export const OfflineCoordinationPanel: React.FC<OfflineCoordinationPanelProps> =
               </div>
 
               {queuedCount > 0 && (
-                <button
+                <motion.button
+                  whileHover={{ scale: 1.03 }}
+                  whileTap={{ scale: 0.97 }}
                   onClick={onTransmitAllQueued}
                   className="px-3 py-1.5 bg-rose-600 hover:bg-rose-700 text-white rounded-xl text-xs font-bold transition-all shadow-xs cursor-pointer flex items-center gap-1"
                 >
-                  <span>📡</span>
+                  <SendRounded fontSize="small" />
                   <span>Broadcast All ({queuedCount})</span>
-                </button>
+                </motion.button>
               )}
             </div>
 
@@ -299,10 +326,10 @@ export const OfflineCoordinationPanel: React.FC<OfflineCoordinationPanelProps> =
               <div className="grid grid-cols-2 gap-2">
                 <input
                   type="text"
-                  placeholder="Recipient (e.g. Coastguard, Shelter #4)"
+                  placeholder="Recipient (e.g. Coastguard)"
                   value={newRadioRecipient}
                   onChange={(e) => setNewRadioRecipient(e.target.value)}
-                  className="bg-white border border-slate-200 rounded-xl px-2.5 py-1 text-xs text-slate-800"
+                  className="bg-white border border-slate-200 rounded-xl px-2.5 py-1 text-xs text-slate-800 font-medium"
                   required
                 />
                 <select
@@ -321,18 +348,21 @@ export const OfflineCoordinationPanel: React.FC<OfflineCoordinationPanelProps> =
                 value={newRadioContent}
                 onChange={(e) => setNewRadioContent(e.target.value)}
                 rows={2}
-                className="w-full bg-white border border-slate-200 rounded-xl px-2.5 py-1.5 text-xs text-slate-800 focus:outline-none focus:border-sky-500"
+                className="w-full bg-white border border-slate-200 rounded-xl px-2.5 py-1.5 text-xs text-slate-800 focus:outline-none focus:border-sky-500 font-medium"
                 required
               />
 
               <div className="flex justify-between items-center">
-                <span className="text-[11px] text-slate-500">Channel: VHF 145.225 / Ch 16</span>
-                <button
+                <span className="text-[11px] text-slate-500 font-semibold">{newRadioChannel}</span>
+                <motion.button
+                  whileHover={{ scale: 1.03 }}
+                  whileTap={{ scale: 0.97 }}
                   type="submit"
-                  className="px-4 py-1.5 bg-sky-600 hover:bg-sky-700 text-white rounded-xl text-xs font-bold cursor-pointer"
+                  className="px-4 py-1.5 bg-sky-600 hover:bg-sky-700 text-white rounded-xl text-xs font-bold cursor-pointer flex items-center gap-1"
                 >
-                  Add to Radio Queue
-                </button>
+                  <AddRounded fontSize="small" />
+                  <span>Add to Radio Queue</span>
+                </motion.button>
               </div>
             </form>
 
@@ -344,9 +374,10 @@ export const OfflineCoordinationPanel: React.FC<OfflineCoordinationPanelProps> =
                 </div>
               ) : (
                 safeOutbox.map((msg) => (
-                  <div
+                  <motion.div
                     key={msg.id}
-                    className={`p-2.5 rounded-xl border text-xs ${
+                    whileHover={{ scale: 1.01 }}
+                    className={`p-3 rounded-2xl border text-xs ${
                       msg.status === "TRANSMITTED"
                         ? "bg-emerald-50 border-emerald-200"
                         : "bg-amber-50 border-amber-200"
@@ -356,20 +387,27 @@ export const OfflineCoordinationPanel: React.FC<OfflineCoordinationPanelProps> =
                       <span className="font-bold text-slate-800 text-xs">
                         To: {msg.recipient}
                       </span>
-                      <span className="text-[10px] font-bold text-slate-500">
-                        {msg.status === "TRANSMITTED" ? "✅ Sent Over Radio" : "⏳ Ready in Radio Queue"}
+                      <span className="text-[10px] font-bold text-slate-500 flex items-center gap-0.5">
+                        {msg.status === "TRANSMITTED" ? (
+                          <>
+                            <CheckCircleRounded fontSize="inherit" className="text-emerald-600" />
+                            <span>Sent Over Radio</span>
+                          </>
+                        ) : (
+                          <span>⏳ Ready in Radio Queue</span>
+                        )}
                       </span>
                     </div>
                     <p className="text-slate-700 text-xs leading-relaxed">
                       "{msg.content}"
                     </p>
-                  </div>
+                  </motion.div>
                 ))
               )}
             </div>
           </div>
         </div>
       </div>
-    </div>
+    </motion.div>
   );
 };

@@ -1,5 +1,18 @@
 import React, { useEffect, useRef, useState, useMemo } from "react";
 import L from "leaflet";
+import { motion, AnimatePresence } from "motion/react";
+import AddRounded from "@mui/icons-material/AddRounded";
+import RemoveRounded from "@mui/icons-material/RemoveRounded";
+import CenterFocusStrongRounded from "@mui/icons-material/CenterFocusStrongRounded";
+import WavesRounded from "@mui/icons-material/WavesRounded";
+import LocalFireDepartmentRounded from "@mui/icons-material/LocalFireDepartmentRounded";
+import LayersRounded from "@mui/icons-material/LayersRounded";
+import PlayArrowRounded from "@mui/icons-material/PlayArrowRounded";
+import PauseRounded from "@mui/icons-material/PauseRounded";
+import RestartAltRounded from "@mui/icons-material/RestartAltRounded";
+import ViewInArRounded from "@mui/icons-material/ViewInArRounded";
+import CloseRounded from "@mui/icons-material/CloseRounded";
+import FilterListRounded from "@mui/icons-material/FilterListRounded";
 import {
   CycloneSystem,
   GEELayer,
@@ -25,6 +38,7 @@ export interface GeospatialMapProps {
   geminiAnalysis?: GeminiRiskAnalysis | null;
   onRunGeminiAssessment?: () => void;
   isAnalyzing?: boolean;
+  onSwitchTo3D?: () => void;
 }
 
 export interface CalculatedAssetRisk {
@@ -57,6 +71,7 @@ export const GeospatialMap: React.FC<GeospatialMapProps> = ({
   geminiAnalysis,
   onRunGeminiAssessment,
   isAnalyzing = false,
+  onSwitchTo3D,
 }) => {
   const mapContainerRef = useRef<HTMLDivElement>(null);
   const mapInstanceRef = useRef<L.Map | null>(null);
@@ -772,56 +787,86 @@ export const GeospatialMap: React.FC<GeospatialMapProps> = ({
 
       {/* Floating HUD Controls (Top-Right) */}
       <div className="absolute top-3 right-3 z-10 flex flex-col gap-1.5">
-        <button
-          onClick={() => mapInstanceRef.current?.zoomIn()}
-          className="w-8 h-8 rounded-xl bg-white border-2 border-slate-200 text-slate-700 hover:bg-slate-50 flex items-center justify-center transition-colors text-base font-bold shadow-xs cursor-pointer"
-          title="Zoom In"
-        >
-          +
-        </button>
-        <button
-          onClick={() => mapInstanceRef.current?.zoomOut()}
-          className="w-8 h-8 rounded-xl bg-white border-2 border-slate-200 text-slate-700 hover:bg-slate-50 flex items-center justify-center transition-colors text-base font-bold shadow-xs cursor-pointer"
-          title="Zoom Out"
-        >
-          -
-        </button>
-        <button
+        {onSwitchTo3D && (
+          <motion.button
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            onClick={onSwitchTo3D}
+            className="px-3 py-1.5 rounded-xl border-2 border-indigo-200 bg-gradient-to-r from-indigo-500 to-sky-600 text-white flex items-center justify-center gap-1.5 transition-all text-xs font-black cursor-pointer shadow-md"
+            title="Launch Three.js 3D Storm Simulator"
+          >
+            <ViewInArRounded fontSize="small" />
+            <span>3D Storm View</span>
+          </motion.button>
+        )}
+        <div className="flex items-center gap-1">
+          <motion.button
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            onClick={() => mapInstanceRef.current?.zoomIn()}
+            className="w-8 h-8 rounded-xl bg-white border-2 border-slate-200 text-slate-700 hover:bg-slate-50 flex items-center justify-center transition-colors text-base font-bold shadow-xs cursor-pointer"
+            title="Zoom In"
+          >
+            <AddRounded fontSize="small" />
+          </motion.button>
+          <motion.button
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            onClick={() => mapInstanceRef.current?.zoomOut()}
+            className="w-8 h-8 rounded-xl bg-white border-2 border-slate-200 text-slate-700 hover:bg-slate-50 flex items-center justify-center transition-colors text-base font-bold shadow-xs cursor-pointer"
+            title="Zoom Out"
+          >
+            <RemoveRounded fontSize="small" />
+          </motion.button>
+        </div>
+        <motion.button
+          whileHover={{ scale: 1.03 }}
+          whileTap={{ scale: 0.97 }}
           onClick={handleRecenter}
-          className="px-2.5 h-8 rounded-xl bg-white border-2 border-sky-200 text-sky-700 hover:bg-sky-50 flex items-center justify-center transition-colors text-xs font-bold shadow-xs cursor-pointer"
+          className="px-2.5 h-8 rounded-xl bg-white border-2 border-sky-200 text-sky-700 hover:bg-sky-50 flex items-center justify-center gap-1 transition-colors text-xs font-bold shadow-xs cursor-pointer"
           title="Recenter on Cyclone Eye"
         >
-          🌀 Eye
-        </button>
-        <button
+          <CenterFocusStrongRounded fontSize="inherit" className="text-sky-600" />
+          <span>Eye</span>
+        </motion.button>
+        <motion.button
+          whileHover={{ scale: 1.03 }}
+          whileTap={{ scale: 0.97 }}
           onClick={handleZoomLandfall}
-          className="px-2.5 h-8 rounded-xl bg-white border-2 border-amber-200 text-amber-700 hover:bg-amber-50 flex items-center justify-center transition-colors text-xs font-bold shadow-xs cursor-pointer"
+          className="px-2.5 h-8 rounded-xl bg-white border-2 border-amber-200 text-amber-700 hover:bg-amber-50 flex items-center justify-center gap-1 transition-colors text-xs font-bold shadow-xs cursor-pointer"
           title="Focus Landfall Arc"
         >
-          🌊 Waves
-        </button>
-        <button
+          <WavesRounded fontSize="inherit" className="text-amber-600" />
+          <span>Waves</span>
+        </motion.button>
+        <motion.button
+          whileHover={{ scale: 1.03 }}
+          whileTap={{ scale: 0.97 }}
           onClick={() => setShowVulnerabilityHeatmap(!showVulnerabilityHeatmap)}
-          className={`px-3 py-1 rounded-xl border-2 flex items-center justify-center transition-all text-xs font-bold cursor-pointer shadow-xs ${
+          className={`px-3 py-1 rounded-xl border-2 flex items-center justify-center gap-1 transition-all text-xs font-bold cursor-pointer shadow-xs ${
             showVulnerabilityHeatmap
               ? "bg-rose-500 border-rose-600 text-white"
               : "bg-white border-slate-200 text-slate-700 hover:bg-slate-50"
           }`}
           title="Toggle Vulnerability Heatmap"
         >
-          🔥 Heatmap
-        </button>
-        <button
+          <LocalFireDepartmentRounded fontSize="inherit" />
+          <span>Heatmap</span>
+        </motion.button>
+        <motion.button
+          whileHover={{ scale: 1.03 }}
+          whileTap={{ scale: 0.97 }}
           onClick={() => setShowLayerPanel(!showLayerPanel)}
-          className={`px-3 py-1 rounded-xl border-2 flex items-center justify-center transition-all text-xs font-bold cursor-pointer shadow-xs ${
+          className={`px-3 py-1 rounded-xl border-2 flex items-center justify-center gap-1 transition-all text-xs font-bold cursor-pointer shadow-xs ${
             showLayerPanel
               ? "bg-sky-600 border-sky-700 text-white"
               : "bg-white border-slate-200 text-slate-700 hover:bg-slate-50"
           }`}
           title="Toggle Map Layers"
         >
-          🗺️ Layers
-        </button>
+          <LayersRounded fontSize="inherit" />
+          <span>Layers</span>
+        </motion.button>
       </div>
 
       {/* Floating Layer Control Dock (Top-Left) */}
@@ -1044,24 +1089,29 @@ export const GeospatialMap: React.FC<GeospatialMapProps> = ({
       </div>
 
       {/* Timeline Scrubber Bar (Bottom) */}
-      <div className="bg-white border-t border-slate-200 p-3 px-4 flex items-center justify-between gap-3 text-xs z-10 rounded-b-2xl shadow-xs">
+      <div className="bg-white border-t border-slate-200 p-3 px-4 flex items-center justify-between gap-3 text-xs z-10 rounded-b-3xl shadow-xs">
         <div className="flex items-center gap-2">
-          <button
+          <motion.button
+            whileHover={{ scale: 1.03 }}
+            whileTap={{ scale: 0.97 }}
             onClick={() => setIsPlayingTimeline(!isPlayingTimeline)}
-            className="px-3 py-1.5 rounded-xl bg-sky-600 hover:bg-sky-700 text-white font-bold text-xs transition-colors cursor-pointer shadow-xs flex items-center gap-1"
+            className="px-3 py-1.5 rounded-xl bg-sky-600 hover:bg-sky-700 text-white font-bold text-xs transition-colors cursor-pointer shadow-xs flex items-center gap-1.5"
           >
-            <span>{isPlayingTimeline ? "⏸️" : "▶️"}</span>
+            {isPlayingTimeline ? <PauseRounded fontSize="small" /> : <PlayArrowRounded fontSize="small" />}
             <span>{isPlayingTimeline ? "Pause" : "Play Storm Motion"}</span>
-          </button>
-          <button
+          </motion.button>
+          <motion.button
+            whileHover={{ scale: 1.03 }}
+            whileTap={{ scale: 0.97 }}
             onClick={() => {
               setIsPlayingTimeline(false);
               setSelectedTimeHour(0);
             }}
-            className="px-2.5 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold transition-colors cursor-pointer"
+            className="px-2.5 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold transition-colors cursor-pointer flex items-center gap-1"
           >
-            Reset
-          </button>
+            <RestartAltRounded fontSize="small" />
+            <span>Reset</span>
+          </motion.button>
           <span className="text-sky-800 text-xs font-black ml-1.5 hidden sm:inline">
             {selectedTimeHour === 0
               ? "🌀 Storm Landfall (Peak)"
@@ -1073,8 +1123,9 @@ export const GeospatialMap: React.FC<GeospatialMapProps> = ({
 
         <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar">
           {[-36, -24, -12, 0, 6, 12, 18, 24].map((hr) => (
-            <button
+            <motion.button
               key={hr}
+              whileTap={{ scale: 0.95 }}
               onClick={() => {
                 setIsPlayingTimeline(false);
                 setSelectedTimeHour(hr);
@@ -1088,7 +1139,7 @@ export const GeospatialMap: React.FC<GeospatialMapProps> = ({
               }`}
             >
               {hr === 0 ? "Landfall" : hr > 0 ? `+${hr}h` : `${hr}h`}
-            </button>
+            </motion.button>
           ))}
         </div>
       </div>

@@ -25,6 +25,7 @@ import {
 
 import { Navbar } from "./components/Navbar";
 import { GeospatialMap } from "./components/GeospatialMap";
+import { CycloneThreeVisualizer } from "./components/CycloneThreeVisualizer";
 import { SurgeModelPanel } from "./components/SurgeModelPanel";
 import { RainfallRunoffPanel } from "./components/RainfallRunoffPanel";
 import { InfrastructurePanel } from "./components/InfrastructurePanel";
@@ -33,6 +34,16 @@ import { ParametricInsurancePanel } from "./components/ParametricInsurancePanel"
 import { OfflineCoordinationPanel } from "./components/OfflineCoordinationPanel";
 import { DisasterChatModal } from "./components/DisasterChatModal";
 import { CustomScenarioModal } from "./components/CustomScenarioModal";
+import { motion, AnimatePresence } from "motion/react";
+
+import WavesRounded from "@mui/icons-material/WavesRounded";
+import WaterDropRounded from "@mui/icons-material/WaterDropRounded";
+import ShieldRounded from "@mui/icons-material/ShieldRounded";
+import MonetizationOnRounded from "@mui/icons-material/MonetizationOnRounded";
+import ScienceRounded from "@mui/icons-material/ScienceRounded";
+import ChatBubbleOutlineRounded from "@mui/icons-material/ChatBubbleOutlineRounded";
+import ArrowForwardRounded from "@mui/icons-material/ArrowForwardRounded";
+import ViewInArRounded from "@mui/icons-material/ViewInArRounded";
 
 export default function App() {
   // Scenario & Global State
@@ -317,211 +328,311 @@ export default function App() {
           </div>
 
           <div className="flex items-center gap-2.5 shrink-0 self-stretch sm:self-auto">
-            <button
+            <motion.button
+              whileHover={{ scale: 1.03 }}
+              whileTap={{ scale: 0.97 }}
+              onClick={() => setActiveTab("3d-vortex")}
+              className="flex-1 sm:flex-none px-3.5 py-2 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 border border-indigo-200 rounded-xl text-xs font-bold transition-all shadow-xs cursor-pointer flex items-center justify-center gap-1.5"
+            >
+              <ViewInArRounded fontSize="small" className="text-indigo-600" />
+              <span>3D Storm View</span>
+            </motion.button>
+            <motion.button
+              whileHover={{ scale: 1.03 }}
+              whileTap={{ scale: 0.97 }}
               onClick={() => setIsCustomScenarioOpen(true)}
               className="flex-1 sm:flex-none px-3.5 py-2 bg-sky-50 hover:bg-sky-100 text-sky-700 border border-sky-200 rounded-xl text-xs font-bold transition-colors cursor-pointer flex items-center justify-center gap-1.5"
             >
-              <span>🧪</span>
+              <ScienceRounded fontSize="small" className="text-sky-600" />
               <span>Test Storm Lab</span>
-            </button>
-            <button
+            </motion.button>
+            <motion.button
+              whileHover={{ scale: 1.03 }}
+              whileTap={{ scale: 0.97 }}
               onClick={() => setIsChatOpen(true)}
               className="flex-1 sm:flex-none px-3.5 py-2 bg-gradient-to-r from-sky-500 to-blue-600 hover:from-sky-600 hover:to-blue-700 text-white rounded-xl text-xs font-bold transition-all shadow-xs cursor-pointer flex items-center justify-center gap-1.5"
             >
-              <span>💬</span>
+              <ChatBubbleOutlineRounded fontSize="small" />
               <span>Ask Storm Guide</span>
-            </button>
+            </motion.button>
           </div>
         </div>
 
-        {/* Tab Content Panels */}
-        {activeTab === "geospatial" && (
-          <div className="space-y-4">
-            {/* Geospatial Situation Room with Vulnerability Heatmap */}
-            <GeospatialMap
-              cyclone={activeCyclone}
-              infrastructure={infrastructure}
-              surgeMetrics={surgeMetrics}
-              rainfallMetrics={rainfallMetrics}
-              onToggleHardening={handleToggleHardening}
-              onSimulateCustom={() => setIsCustomScenarioOpen(true)}
-              geminiAnalysis={geminiAnalysis}
-              onRunGeminiAssessment={handleTriggerGeminiAnalysis}
-              isAnalyzing={isAnalyzing}
-            />
+        {/* Tab Content Panels with Motion Transition */}
+        <AnimatePresence mode="wait">
+          {activeTab === "geospatial" && (
+            <motion.div
+              key="geospatial"
+              initial={{ opacity: 0, y: 12 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -8 }}
+              transition={{ duration: 0.25 }}
+              className="space-y-4"
+            >
+              {/* Geospatial Situation Room with Vulnerability Heatmap */}
+              <GeospatialMap
+                cyclone={activeCyclone}
+                infrastructure={infrastructure}
+                surgeMetrics={surgeMetrics}
+                rainfallMetrics={rainfallMetrics}
+                onToggleHardening={handleToggleHardening}
+                onSimulateCustom={() => setIsCustomScenarioOpen(true)}
+                geminiAnalysis={geminiAnalysis}
+                onRunGeminiAssessment={handleTriggerGeminiAnalysis}
+                isAnalyzing={isAnalyzing}
+                onSwitchTo3D={() => setActiveTab("3d-vortex")}
+              />
 
-            {/* 4 Colorful Interactive Explore Cards */}
-            <div>
-              <div className="flex items-center justify-between mb-2.5 px-1">
-                <span className="font-bold text-slate-800 text-sm flex items-center gap-1.5">
-                  <span>📊</span>
-                  <span>Explore What the Storm is Doing</span>
-                </span>
-                <span className="text-xs text-slate-500">
-                  Click any card to dive in and learn more!
-                </span>
+              {/* 4 Colorful Interactive Explore Cards */}
+              <div>
+                <div className="flex items-center justify-between mb-2.5 px-1">
+                  <span className="font-bold text-slate-800 text-sm flex items-center gap-1.5">
+                    <span>📊</span>
+                    <span>Explore What the Storm is Doing</span>
+                  </span>
+                  <span className="text-xs text-slate-500">
+                    Click any card to dive in and learn more!
+                  </span>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5">
+                  {/* 1. Sea & Waves */}
+                  <motion.div
+                    whileHover={{ y: -4, scale: 1.01 }}
+                    whileTap={{ scale: 0.98 }}
+                    onClick={() => setActiveTab("surge")}
+                    className="p-4 rounded-2xl border-2 border-sky-200 bg-gradient-to-b from-sky-50/70 to-white hover:border-sky-400 hover:shadow-md transition-all cursor-pointer group"
+                  >
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs font-bold text-sky-700 uppercase tracking-wide flex items-center gap-1">
+                        <WavesRounded fontSize="small" />
+                        <span>Sea & Waves</span>
+                      </span>
+                      <span className="text-xs text-sky-500 font-semibold group-hover:translate-x-0.5 transition-transform flex items-center">
+                        <ArrowForwardRounded fontSize="inherit" />
+                      </span>
+                    </div>
+                    <div className="mt-2 text-2xl font-black text-sky-950">
+                      +{surgeMetrics.totalWaterLevelMeters}m
+                    </div>
+                    <div className="text-xs font-bold text-sky-800 mt-0.5">
+                      Above Normal High Tide
+                    </div>
+                    <p className="text-xs text-slate-600 mt-2 leading-relaxed">
+                      Ocean water pushing up to {surgeMetrics.inlandPenetrationKm} km into coastal bays and beaches.
+                    </p>
+                  </motion.div>
+
+                  {/* 2. Rain & Rivers */}
+                  <motion.div
+                    whileHover={{ y: -4, scale: 1.01 }}
+                    whileTap={{ scale: 0.98 }}
+                    onClick={() => setActiveTab("rainfall")}
+                    className="p-4 rounded-2xl border-2 border-teal-200 bg-gradient-to-b from-teal-50/70 to-white hover:border-teal-400 hover:shadow-md transition-all cursor-pointer group"
+                  >
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs font-bold text-teal-700 uppercase tracking-wide flex items-center gap-1">
+                        <WaterDropRounded fontSize="small" />
+                        <span>Rain & Rivers</span>
+                      </span>
+                      <span className="text-xs text-teal-500 font-semibold group-hover:translate-x-0.5 transition-transform flex items-center">
+                        <ArrowForwardRounded fontSize="inherit" />
+                      </span>
+                    </div>
+                    <div className="mt-2 text-2xl font-black text-teal-950">
+                      {rainfallMetrics.cumulativeRainfallMm} mm
+                    </div>
+                    <div className="text-xs font-bold text-teal-800 mt-0.5">
+                      Expected Over 2 Days
+                    </div>
+                    <p className="text-xs text-slate-600 mt-2 leading-relaxed">
+                      Ground is {rainfallMetrics.soilSaturationPercent}% full of water. Rivers are rising fast!
+                    </p>
+                  </motion.div>
+
+                  {/* 3. City Helpers & Shelters */}
+                  <motion.div
+                    whileHover={{ y: -4, scale: 1.01 }}
+                    whileTap={{ scale: 0.98 }}
+                    onClick={() => setActiveTab("infrastructure")}
+                    className="p-4 rounded-2xl border-2 border-emerald-200 bg-gradient-to-b from-emerald-50/70 to-white hover:border-emerald-400 hover:shadow-md transition-all cursor-pointer group"
+                  >
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs font-bold text-emerald-700 uppercase tracking-wide flex items-center gap-1">
+                        <ShieldRounded fontSize="small" />
+                        <span>City Helpers</span>
+                      </span>
+                      <span className="text-xs text-emerald-500 font-semibold group-hover:translate-x-0.5 transition-transform flex items-center">
+                        <ArrowForwardRounded fontSize="inherit" />
+                      </span>
+                    </div>
+                    <div className="mt-2 text-2xl font-black text-emerald-950">
+                      {infrastructure.filter((i) => i.isHardened).length} of {infrastructure.length}
+                    </div>
+                    <div className="text-xs font-bold text-emerald-800 mt-0.5">
+                      Places Protected & Ready
+                    </div>
+                    <p className="text-xs text-slate-600 mt-2 leading-relaxed">
+                      Hospitals, emergency power stations, and clear highway escape routes.
+                    </p>
+                  </motion.div>
+
+                  {/* 4. Emergency Relief Fund */}
+                  <motion.div
+                    whileHover={{ y: -4, scale: 1.01 }}
+                    whileTap={{ scale: 0.98 }}
+                    onClick={() => setActiveTab("parametric")}
+                    className="p-4 rounded-2xl border-2 border-amber-200 bg-gradient-to-b from-amber-50/70 to-white hover:border-amber-400 hover:shadow-md transition-all cursor-pointer group"
+                  >
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs font-bold text-amber-700 uppercase tracking-wide flex items-center gap-1">
+                        <MonetizationOnRounded fontSize="small" />
+                        <span>Relief Fund</span>
+                      </span>
+                      <span className="text-xs text-amber-500 font-semibold group-hover:translate-x-0.5 transition-transform flex items-center">
+                        <ArrowForwardRounded fontSize="inherit" />
+                      </span>
+                    </div>
+                    <div className="mt-2 text-2xl font-black text-amber-950">
+                      ${(parametricPolicy.disbursedAmountUsd / 1000000).toFixed(1)} Million
+                    </div>
+                    <div className="text-xs font-bold text-amber-800 mt-0.5">
+                      Instant Aid Ready Now
+                    </div>
+                    <p className="text-xs text-slate-600 mt-2 leading-relaxed">
+                      Pre-funded money sent immediately for bottled water, shelter food, and medicine.
+                    </p>
+                  </motion.div>
+                </div>
               </div>
+            </motion.div>
+          )}
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5">
-                {/* 1. Sea & Waves */}
-                <div
-                  onClick={() => setActiveTab("surge")}
-                  className="p-4 rounded-2xl border-2 border-sky-200 bg-gradient-to-b from-sky-50/70 to-white hover:border-sky-400 hover:shadow-md transition-all cursor-pointer group"
-                >
-                  <div className="flex items-center justify-between">
-                    <span className="text-xs font-bold text-sky-700 uppercase tracking-wide">
-                      🌊 Sea & Waves
-                    </span>
-                    <span className="text-xs text-sky-500 font-semibold group-hover:translate-x-0.5 transition-transform">
-                      Explore →
-                    </span>
-                  </div>
-                  <div className="mt-2 text-2xl font-black text-sky-950">
-                    +{surgeMetrics.totalWaterLevelMeters}m
-                  </div>
-                  <div className="text-xs font-bold text-sky-800 mt-0.5">
-                    Above Normal High Tide
-                  </div>
-                  <p className="text-xs text-slate-600 mt-2 leading-relaxed">
-                    Ocean water pushing up to {surgeMetrics.inlandPenetrationKm} km into coastal bays and beaches.
-                  </p>
-                </div>
+          {/* 3D Tropical Cyclone Vortex & Wave Simulator (Three.js) */}
+          {activeTab === "3d-vortex" && (
+            <motion.div
+              key="3d-vortex"
+              initial={{ opacity: 0, y: 12 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -8 }}
+              transition={{ duration: 0.25 }}
+            >
+              <CycloneThreeVisualizer
+                cyclone={activeCyclone}
+                surgeMetrics={surgeMetrics}
+                onSwitchTo2DMap={() => setActiveTab("geospatial")}
+              />
+            </motion.div>
+          )}
 
-                {/* 2. Rain & Rivers */}
-                <div
-                  onClick={() => setActiveTab("rainfall")}
-                  className="p-4 rounded-2xl border-2 border-teal-200 bg-gradient-to-b from-teal-50/70 to-white hover:border-teal-400 hover:shadow-md transition-all cursor-pointer group"
-                >
-                  <div className="flex items-center justify-between">
-                    <span className="text-xs font-bold text-teal-700 uppercase tracking-wide">
-                      🌧️ Rain & Rivers
-                    </span>
-                    <span className="text-xs text-teal-500 font-semibold group-hover:translate-x-0.5 transition-transform">
-                      Explore →
-                    </span>
-                  </div>
-                  <div className="mt-2 text-2xl font-black text-teal-950">
-                    {rainfallMetrics.cumulativeRainfallMm} mm
-                  </div>
-                  <div className="text-xs font-bold text-teal-800 mt-0.5">
-                    Expected Over 2 Days
-                  </div>
-                  <p className="text-xs text-slate-600 mt-2 leading-relaxed">
-                    Ground is {rainfallMetrics.soilSaturationPercent}% full of water. Rivers are rising fast!
-                  </p>
-                </div>
+          {/* Storm Surge Panel */}
+          {activeTab === "surge" && (
+            <motion.div
+              key="surge"
+              initial={{ opacity: 0, y: 12 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -8 }}
+              transition={{ duration: 0.25 }}
+            >
+              <SurgeModelPanel
+                cyclone={activeCyclone}
+                surgeMetrics={surgeMetrics}
+                onUpdateSurgeParams={handleUpdateSurgeParams}
+              />
+            </motion.div>
+          )}
 
-                {/* 3. City Helpers & Shelters */}
-                <div
-                  onClick={() => setActiveTab("infrastructure")}
-                  className="p-4 rounded-2xl border-2 border-emerald-200 bg-gradient-to-b from-emerald-50/70 to-white hover:border-emerald-400 hover:shadow-md transition-all cursor-pointer group"
-                >
-                  <div className="flex items-center justify-between">
-                    <span className="text-xs font-bold text-emerald-700 uppercase tracking-wide">
-                      🏥 City Helpers
-                    </span>
-                    <span className="text-xs text-emerald-500 font-semibold group-hover:translate-x-0.5 transition-transform">
-                      Explore →
-                    </span>
-                  </div>
-                  <div className="mt-2 text-2xl font-black text-emerald-950">
-                    {infrastructure.filter((i) => i.isHardened).length} of {infrastructure.length}
-                  </div>
-                  <div className="text-xs font-bold text-emerald-800 mt-0.5">
-                    Places Protected & Ready
-                  </div>
-                  <p className="text-xs text-slate-600 mt-2 leading-relaxed">
-                    Hospitals, emergency power stations, and clear highway escape routes.
-                  </p>
-                </div>
+          {/* Rainfall & Runoff Panel */}
+          {activeTab === "rainfall" && (
+            <motion.div
+              key="rainfall"
+              initial={{ opacity: 0, y: 12 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -8 }}
+              transition={{ duration: 0.25 }}
+            >
+              <RainfallRunoffPanel cyclone={activeCyclone} rainfallMetrics={rainfallMetrics} />
+            </motion.div>
+          )}
 
-                {/* 4. Emergency Relief Fund */}
-                <div
-                  onClick={() => setActiveTab("parametric")}
-                  className="p-4 rounded-2xl border-2 border-amber-200 bg-gradient-to-b from-amber-50/70 to-white hover:border-amber-400 hover:shadow-md transition-all cursor-pointer group"
-                >
-                  <div className="flex items-center justify-between">
-                    <span className="text-xs font-bold text-amber-700 uppercase tracking-wide">
-                      💰 Community Relief Fund
-                    </span>
-                    <span className="text-xs text-amber-500 font-semibold group-hover:translate-x-0.5 transition-transform">
-                      Explore →
-                    </span>
-                  </div>
-                  <div className="mt-2 text-2xl font-black text-amber-950">
-                    ${(parametricPolicy.disbursedAmountUsd / 1000000).toFixed(1)} Million
-                  </div>
-                  <div className="text-xs font-bold text-amber-800 mt-0.5">
-                    Instant Aid Ready Now
-                  </div>
-                  <p className="text-xs text-slate-600 mt-2 leading-relaxed">
-                    Pre-funded money sent immediately for bottled water, shelter food, and medicine.
-                  </p>
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
+          {/* Infrastructure Exposure Panel */}
+          {activeTab === "infrastructure" && (
+            <motion.div
+              key="infrastructure"
+              initial={{ opacity: 0, y: 12 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -8 }}
+              transition={{ duration: 0.25 }}
+            >
+              <InfrastructurePanel
+                infrastructure={infrastructure}
+                onToggleHardening={handleToggleHardening}
+              />
+            </motion.div>
+          )}
 
-        {/* Storm Surge Panel */}
-        {activeTab === "surge" && (
-          <SurgeModelPanel
-            cyclone={activeCyclone}
-            surgeMetrics={surgeMetrics}
-            onUpdateSurgeParams={handleUpdateSurgeParams}
-          />
-        )}
+          {/* Early Warning Advisories Panel */}
+          {activeTab === "advisories" && (
+            <motion.div
+              key="advisories"
+              initial={{ opacity: 0, y: 12 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -8 }}
+              transition={{ duration: 0.25 }}
+            >
+              <EarlyWarningAdvisories
+                advisories={advisories}
+                onRegenerate={handleRegenerateAdvisories}
+                cyclone={activeCyclone}
+                surgeMetrics={surgeMetrics}
+                rainfallMetrics={rainfallMetrics}
+                isGenerating={isGeneratingAdvisories}
+              />
+            </motion.div>
+          )}
 
-        {/* Rainfall & Runoff Panel */}
-        {activeTab === "rainfall" && (
-          <RainfallRunoffPanel cyclone={activeCyclone} rainfallMetrics={rainfallMetrics} />
-        )}
+          {/* Parametric Insurance Facility Panel */}
+          {activeTab === "parametric" && (
+            <motion.div
+              key="parametric"
+              initial={{ opacity: 0, y: 12 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -8 }}
+              transition={{ duration: 0.25 }}
+            >
+              <ParametricInsurancePanel
+                policy={parametricPolicy}
+                cyclone={activeCyclone}
+                surgeMetrics={surgeMetrics}
+              />
+            </motion.div>
+          )}
 
-        {/* Infrastructure Exposure Panel */}
-        {activeTab === "infrastructure" && (
-          <InfrastructurePanel
-            infrastructure={infrastructure}
-            onToggleHardening={handleToggleHardening}
-          />
-        )}
-
-        {/* Early Warning Advisories Panel */}
-        {activeTab === "advisories" && (
-          <EarlyWarningAdvisories
-            advisories={advisories}
-            onRegenerate={handleRegenerateAdvisories}
-            cyclone={activeCyclone}
-            surgeMetrics={surgeMetrics}
-            rainfallMetrics={rainfallMetrics}
-            isGenerating={isGeneratingAdvisories}
-          />
-        )}
-
-        {/* Parametric Insurance Facility Panel */}
-        {activeTab === "parametric" && (
-          <ParametricInsurancePanel
-            policy={parametricPolicy}
-            cyclone={activeCyclone}
-            surgeMetrics={surgeMetrics}
-          />
-        )}
-
-        {/* Offline Coordination Panel */}
-        {activeTab === "offline-coordination" && (
-          <OfflineCoordinationPanel
-            tasks={offlineTasks}
-            onToggleTask={handleToggleTask}
-            onAddTask={handleAddTask}
-            outboxMessages={outboxMessages}
-            onAddOutboxMessage={handleAddOutboxMessage}
-            onTransmitAllQueued={handleTransmitAllQueued}
-            isOfflineMode={isOfflineMode}
-            cyclone={activeCyclone}
-            surgeMetrics={surgeMetrics}
-            rainfallMetrics={rainfallMetrics}
-            onExportIAP={handleExportIAP}
-          />
-        )}
+          {/* Offline Coordination Panel */}
+          {activeTab === "offline-coordination" && (
+            <motion.div
+              key="offline-coordination"
+              initial={{ opacity: 0, y: 12 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -8 }}
+              transition={{ duration: 0.25 }}
+            >
+              <OfflineCoordinationPanel
+                tasks={offlineTasks}
+                onToggleTask={handleToggleTask}
+                onAddTask={handleAddTask}
+                outboxMessages={outboxMessages}
+                onAddOutboxMessage={handleAddOutboxMessage}
+                onTransmitAllQueued={handleTransmitAllQueued}
+                isOfflineMode={isOfflineMode}
+                cyclone={activeCyclone}
+                surgeMetrics={surgeMetrics}
+                rainfallMetrics={rainfallMetrics}
+                onExportIAP={handleExportIAP}
+              />
+            </motion.div>
+          )}
+        </AnimatePresence>
       </main>
 
       {/* Floating Tactical Advisor Dock */}

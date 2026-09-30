@@ -145,6 +145,7 @@ export interface OutboxRadioMessage {
 
 export type DashboardTab =
   | "geospatial"
+  | "3d-vortex"
   | "surge"
   | "rainfall"
   | "infrastructure"

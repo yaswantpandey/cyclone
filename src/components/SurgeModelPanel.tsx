@@ -1,5 +1,14 @@
 import React, { useState } from "react";
+import { motion } from "motion/react";
 import { CycloneSystem, SurgeMetrics } from "../types/cyclone";
+import WavesRounded from "@mui/icons-material/WavesRounded";
+import AirRounded from "@mui/icons-material/AirRounded";
+import DarkModeRounded from "@mui/icons-material/DarkModeRounded";
+import WarningAmberRounded from "@mui/icons-material/WarningAmberRounded";
+import BeachAccessRounded from "@mui/icons-material/BeachAccessRounded";
+import TuneRounded from "@mui/icons-material/TuneRounded";
+import PlaceRounded from "@mui/icons-material/PlaceRounded";
+import ShieldRounded from "@mui/icons-material/ShieldRounded";
 
 interface SurgeModelPanelProps {
   cyclone: CycloneSystem;
@@ -51,13 +60,21 @@ export const SurgeModelPanel: React.FC<SurgeModelPanelProps> = ({
   };
 
   return (
-    <div className="space-y-4 text-xs font-sans">
+    <motion.div
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: -10 }}
+      transition={{ duration: 0.3 }}
+      className="space-y-4 text-xs font-sans"
+    >
       {/* Friendly Briefing Header */}
-      <div className="bg-white border-2 border-sky-100 rounded-2xl p-4 shadow-xs">
-        <div className="flex items-center gap-2.5">
-          <span className="text-2xl">🌊</span>
+      <div className="bg-white border-2 border-sky-100 rounded-3xl p-4 sm:p-5 shadow-xs flex items-center justify-between gap-3">
+        <div className="flex items-center gap-3">
+          <div className="p-2.5 bg-sky-100 text-sky-700 rounded-2xl">
+            <WavesRounded fontSize="medium" />
+          </div>
           <div>
-            <h2 className="font-bold text-slate-900 text-sm sm:text-base">
+            <h2 className="font-extrabold text-slate-900 text-sm sm:text-base">
               Sea Waves & Coastal High Water Watch
             </h2>
             <p className="text-xs text-slate-600 mt-0.5">
@@ -70,9 +87,12 @@ export const SurgeModelPanel: React.FC<SurgeModelPanelProps> = ({
       {/* 4 Colorful Readout Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5">
         {/* Wind-Driven Surge */}
-        <div className="bg-white border-2 border-sky-200 rounded-2xl p-4 shadow-xs">
+        <motion.div
+          whileHover={{ y: -3, scale: 1.01 }}
+          className="bg-white border-2 border-sky-200 rounded-2xl p-4 shadow-xs"
+        >
           <div className="text-xs font-bold text-sky-700 uppercase tracking-wide flex items-center gap-1.5">
-            <span>💨</span>
+            <AirRounded fontSize="small" />
             <span>Wind-Pushed Wave Rise</span>
           </div>
           <div className="mt-1 flex items-baseline gap-1.5">
@@ -84,12 +104,15 @@ export const SurgeModelPanel: React.FC<SurgeModelPanelProps> = ({
           <p className="mt-1.5 text-xs text-slate-600 leading-snug">
             Caused by {cyclone.maxWindSpeedKmph} km/h winds pushing across the shallow bay.
           </p>
-        </div>
+        </motion.div>
 
         {/* High Tide Addition */}
-        <div className="bg-white border-2 border-amber-200 rounded-2xl p-4 shadow-xs">
+        <motion.div
+          whileHover={{ y: -3, scale: 1.01 }}
+          className="bg-white border-2 border-amber-200 rounded-2xl p-4 shadow-xs"
+        >
           <div className="text-xs font-bold text-amber-700 uppercase tracking-wide flex items-center gap-1.5">
-            <span>🌕</span>
+            <DarkModeRounded fontSize="small" />
             <span>Moon & Ocean Tide</span>
           </div>
           <div className="mt-1 flex items-baseline gap-1.5">
@@ -101,12 +124,15 @@ export const SurgeModelPanel: React.FC<SurgeModelPanelProps> = ({
           <p className="mt-1.5 text-xs text-slate-600 leading-snug">
             During full moon or new moon, tides are naturally higher!
           </p>
-        </div>
+        </motion.div>
 
         {/* Total Water Level */}
-        <div className="bg-rose-50 border-2 border-rose-300 rounded-2xl p-4 shadow-xs">
+        <motion.div
+          whileHover={{ y: -3, scale: 1.01 }}
+          className="bg-rose-50 border-2 border-rose-300 rounded-2xl p-4 shadow-xs"
+        >
           <div className="text-xs font-bold text-rose-800 uppercase tracking-wide flex items-center gap-1.5">
-            <span>⚠️</span>
+            <WarningAmberRounded fontSize="small" />
             <span>Total Water Level</span>
           </div>
           <div className="mt-1 flex items-baseline gap-1.5">
@@ -118,12 +144,15 @@ export const SurgeModelPanel: React.FC<SurgeModelPanelProps> = ({
           <p className="mt-1.5 text-xs text-rose-800 leading-snug font-medium">
             High enough to flow over coastal sea walls and road bridges.
           </p>
-        </div>
+        </motion.div>
 
         {/* Inland Reach */}
-        <div className="bg-white border-2 border-teal-200 rounded-2xl p-4 shadow-xs">
+        <motion.div
+          whileHover={{ y: -3, scale: 1.01 }}
+          className="bg-white border-2 border-teal-200 rounded-2xl p-4 shadow-xs"
+        >
           <div className="text-xs font-bold text-teal-700 uppercase tracking-wide flex items-center gap-1.5">
-            <span>🏖️</span>
+            <BeachAccessRounded fontSize="small" />
             <span>How Far Inshore?</span>
           </div>
           <div className="mt-1 flex items-baseline gap-1.5">
@@ -135,17 +164,17 @@ export const SurgeModelPanel: React.FC<SurgeModelPanelProps> = ({
           <p className="mt-1.5 text-xs text-slate-600 leading-snug">
             Water flows up rivers and low creeks into nearby farm fields.
           </p>
-        </div>
+        </motion.div>
       </div>
 
       {/* Cross-Section & Interactive Sliders */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
         {/* Visual Cross-Section Diagram */}
-        <div className="lg:col-span-2 bg-white border-2 border-slate-200 rounded-2xl p-4 sm:p-5 shadow-xs">
+        <div className="lg:col-span-2 bg-white border-2 border-slate-200 rounded-3xl p-4 sm:p-5 shadow-xs">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between border-b border-slate-100 pb-3 mb-3 gap-2">
             <div>
               <span className="font-bold text-slate-900 text-sm flex items-center gap-1.5">
-                <span>🎨</span>
+                <TuneRounded className="text-sky-600" fontSize="small" />
                 <span>See the Wave in Action: Coastal Cross-Section</span>
               </span>
               <p className="text-xs text-slate-500 mt-0.5">
@@ -158,7 +187,7 @@ export const SurgeModelPanel: React.FC<SurgeModelPanelProps> = ({
           </div>
 
           {/* Friendly Colorful SVG */}
-          <div className="w-full h-52 bg-gradient-to-b from-sky-100 to-sky-50 rounded-xl p-2 relative overflow-hidden border border-sky-200 shadow-inner">
+          <div className="w-full h-52 bg-gradient-to-b from-sky-100 to-sky-50 rounded-2xl p-2 relative overflow-hidden border border-sky-200 shadow-inner">
             <svg viewBox="0 0 700 200" className="w-full h-full">
               {/* Sky background with clouds */}
               <circle cx="80" cy="35" r="16" fill="#ffffff" opacity="0.8" />
@@ -221,7 +250,7 @@ export const SurgeModelPanel: React.FC<SurgeModelPanelProps> = ({
           {/* Interactive Sliders */}
           <div className="mt-4 pt-3 border-t border-slate-100 grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
             {/* Shelf Depth */}
-            <div className="bg-sky-50/70 p-3 rounded-xl border border-sky-100">
+            <div className="bg-sky-50/70 p-3 rounded-2xl border border-sky-100">
               <div className="flex justify-between font-bold text-slate-800 mb-1">
                 <span>Sea Floor Slope & Depth:</span>
                 <span className="text-sky-700">{shelfDepthInput} meters</span>
@@ -242,14 +271,14 @@ export const SurgeModelPanel: React.FC<SurgeModelPanelProps> = ({
             </div>
 
             {/* Tidal Phase */}
-            <div className="bg-amber-50/70 p-3 rounded-xl border border-amber-100">
+            <div className="bg-amber-50/70 p-3 rounded-2xl border border-amber-100">
               <div className="font-bold text-slate-800 mb-1.5">Moon & Ocean Tide Level:</div>
               <div className="flex items-center gap-1.5">
                 {(["Spring High Tide", "Neap High Tide", "Ebb Tide"] as const).map((phase) => (
                   <button
                     key={phase}
                     onClick={() => handleTidalPhaseChange(phase)}
-                    className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+                    className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
                       activeTidalPhase === phase
                         ? "bg-amber-500 text-white shadow-xs"
                         : "bg-white text-slate-700 hover:bg-slate-100 border border-slate-200"
@@ -267,11 +296,11 @@ export const SurgeModelPanel: React.FC<SurgeModelPanelProps> = ({
         </div>
 
         {/* Coastal Towns to Watch */}
-        <div className="bg-white border-2 border-slate-200 rounded-2xl p-4 sm:p-5 shadow-xs flex flex-col justify-between">
+        <div className="bg-white border-2 border-slate-200 rounded-3xl p-4 sm:p-5 shadow-xs flex flex-col justify-between">
           <div>
             <div className="flex items-center justify-between border-b border-slate-100 pb-2.5 mb-2.5">
               <span className="font-bold text-slate-900 text-sm flex items-center gap-1.5">
-                <span>📍</span>
+                <PlaceRounded className="text-rose-500" fontSize="small" />
                 <span>Coastal Towns to Protect</span>
               </span>
               <span className="text-xs text-sky-700 font-semibold bg-sky-50 px-2 py-0.5 rounded-full border border-sky-200">
@@ -284,9 +313,10 @@ export const SurgeModelPanel: React.FC<SurgeModelPanelProps> = ({
 
             <div className="space-y-2">
               {(surgeMetrics?.highestRiskSectors || []).map((sector, i) => (
-                <div
+                <motion.div
                   key={i}
-                  className="p-3 rounded-xl bg-slate-50 border border-slate-200 hover:border-sky-300 transition-colors flex items-center justify-between text-xs"
+                  whileHover={{ scale: 1.02 }}
+                  className="p-3 rounded-2xl bg-slate-50 border border-slate-200 hover:border-sky-300 transition-colors flex items-center justify-between text-xs"
                 >
                   <div>
                     <div className="font-bold text-slate-800 text-xs">{sector.sector}</div>
@@ -300,16 +330,19 @@ export const SurgeModelPanel: React.FC<SurgeModelPanelProps> = ({
                       {sector.risk}
                     </span>
                   </div>
-                </div>
+                </motion.div>
               ))}
             </div>
           </div>
 
-          <div className="mt-4 p-3 rounded-xl bg-emerald-50 border border-emerald-200 text-xs text-emerald-900 leading-snug">
-            <strong>Family Safety Advice:</strong> Everyone living within 5 km of the beach or near tidal rivers should move to high-ground shelters before the storm arrives.
+          <div className="mt-4 p-3.5 rounded-2xl bg-emerald-50 border border-emerald-200 text-xs text-emerald-900 leading-snug flex items-start gap-2">
+            <ShieldRounded className="text-emerald-600 shrink-0" fontSize="small" />
+            <div>
+              <strong>Family Safety Advice:</strong> Everyone living within 5 km of the beach or near tidal rivers should move to high-ground shelters before the storm arrives.
+            </div>
           </div>
         </div>
       </div>
-    </div>
+    </motion.div>
   );
 };
