@@ -85,7 +85,7 @@ export const SurgeModelPanel: React.FC<SurgeModelPanelProps> = ({
       </div>
 
       {/* 4 Colorful Readout Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-3.5">
         {/* Wind-Driven Surge */}
         <motion.div
           whileHover={{ y: -3, scale: 1.01 }}

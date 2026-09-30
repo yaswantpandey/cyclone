@@ -500,7 +500,7 @@ export const CycloneThreeVisualizer: React.FC<CycloneThreeVisualizerProps> = ({
       </div>
 
       {/* Main 3D Viewport Box */}
-      <div className="relative w-full h-[580px] rounded-3xl overflow-hidden border-2 border-sky-100 bg-[#e8f2fa] shadow-md flex flex-col">
+      <div className="relative w-full h-[400px] sm:h-[500px] lg:h-[580px] rounded-3xl overflow-hidden border-2 border-sky-100 bg-[#e8f2fa] shadow-md flex flex-col">
         {/* Canvas container with mouse drag listeners */}
         <div
           ref={containerRef}
@@ -644,14 +644,14 @@ export const CycloneThreeVisualizer: React.FC<CycloneThreeVisualizerProps> = ({
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: 10 }}
-              className="absolute bottom-16 left-3 z-10 bg-white/95 backdrop-blur-xs border-2 border-slate-200 rounded-2xl p-3 shadow-lg max-w-sm text-xs space-y-2"
+              className="absolute bottom-16 left-3 z-10 bg-white/95 backdrop-blur-xs border-2 border-slate-200 rounded-2xl p-2.5 sm:p-3 shadow-lg max-w-[calc(100%-24px)] sm:max-w-sm text-xs space-y-2"
             >
               <div className="font-bold text-slate-900 text-xs flex items-center justify-between">
                 <span className="flex items-center gap-1.5">
                   <WaterDropRounded className="text-sky-500" fontSize="small" />
-                  <span>3D Storm Anatomy Guide:</span>
+                  <span>3D Storm Anatomy:</span>
                 </span>
-                <span className="text-[10px] text-slate-400 font-normal">Click a label to learn</span>
+                <span className="text-[10px] text-slate-400 font-normal hidden sm:inline">Click a label to learn</span>
               </div>
 
               <div className="flex flex-wrap gap-1.5">

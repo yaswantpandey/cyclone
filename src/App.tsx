@@ -302,7 +302,7 @@ export default function App() {
       />
 
       {/* Main Command Workspace */}
-      <main className="flex-1 max-w-7xl w-full mx-auto p-4 sm:p-6 space-y-5">
+      <main className="flex-1 max-w-7xl w-full mx-auto px-3 sm:px-6 py-3 sm:py-6 space-y-4 sm:space-y-5 pb-24 sm:pb-8">
         {/* Friendly Storm Alert Banner */}
         <div className="bg-white border-2 border-sky-100 rounded-2xl p-4 sm:p-5 shadow-xs flex flex-col lg:flex-row items-start lg:items-center justify-between gap-4">
           <div className="flex items-center gap-3.5">
@@ -395,7 +395,7 @@ export default function App() {
                   </span>
                 </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5">
+                <div className="grid grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-3.5">
                   {/* 1. Sea & Waves */}
                   <motion.div
                     whileHover={{ y: -4, scale: 1.01 }}
@@ -636,20 +636,20 @@ export default function App() {
       </main>
 
       {/* Floating Tactical Advisor Dock */}
-      <div className="fixed bottom-5 right-5 z-40">
+      <div className="fixed bottom-20 sm:bottom-6 right-3 sm:right-6 z-40">
         <button
           onClick={() => setIsChatOpen(true)}
-          className="px-4 py-2.5 rounded-full bg-gradient-to-r from-sky-500 to-blue-600 hover:from-sky-600 hover:to-blue-700 text-white border-2 border-white text-xs font-bold shadow-lg transition-transform hover:scale-105 cursor-pointer flex items-center gap-2"
+          className="px-3.5 sm:px-4 py-2 sm:py-2.5 rounded-full bg-gradient-to-r from-sky-500 to-blue-600 hover:from-sky-600 hover:to-blue-700 text-white border-2 border-white text-xs font-bold shadow-lg transition-transform hover:scale-105 active:scale-95 cursor-pointer flex items-center gap-1.5 sm:gap-2"
         >
-          <span className="text-base">💬</span>
-          <span>Ask Storm Guide</span>
+          <span className="text-sm sm:text-base">💬</span>
+          <span>Ask Guide</span>
         </button>
       </div>
 
       {/* Community Storm Safety Report Modal */}
       {showAnalysisModal && (
-        <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="bg-white border-2 border-sky-100 rounded-3xl max-w-2xl w-full max-h-[85vh] flex flex-col overflow-hidden text-xs shadow-2xl">
+        <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-end sm:items-center justify-center p-0 sm:p-4">
+          <div className="bg-white border-t-2 sm:border-2 border-sky-100 rounded-t-3xl sm:rounded-3xl max-w-2xl w-full max-h-[88vh] sm:max-h-[85vh] flex flex-col overflow-hidden text-xs shadow-2xl">
             {/* Header */}
             <div className="p-4 border-b border-slate-100 flex items-center justify-between bg-sky-50/70">
               <div className="flex items-center gap-2.5">

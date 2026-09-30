@@ -781,7 +781,7 @@ export const GeospatialMap: React.FC<GeospatialMapProps> = ({
   };
 
   return (
-    <div className="relative w-full h-[600px] rounded-3xl overflow-hidden border-2 border-sky-100 bg-sky-50 shadow-md flex flex-col">
+    <div className="relative w-full h-[400px] sm:h-[500px] lg:h-[600px] rounded-3xl overflow-hidden border-2 border-sky-100 bg-sky-50 shadow-md flex flex-col">
       {/* Map Canvas */}
       <div ref={mapContainerRef} className="w-full flex-1 z-0" />
 
@@ -1055,7 +1055,7 @@ export const GeospatialMap: React.FC<GeospatialMapProps> = ({
       )}
 
       {/* Floating Telemetry Legend Bar (Bottom-Right) */}
-      <div className="absolute bottom-16 right-3 z-10 bg-white/95 backdrop-blur-xs border-2 border-slate-200 rounded-2xl p-3 text-xs flex flex-col gap-1.5 max-w-xs shadow-lg">
+      <div className="hidden sm:flex absolute bottom-16 right-3 z-10 bg-white/95 backdrop-blur-xs border-2 border-slate-200 rounded-2xl p-3 text-xs flex-col gap-1.5 max-w-xs shadow-lg">
         <div className="flex items-center justify-between gap-4 text-slate-800">
           <span className="font-bold text-xs">Risk Heatmap Scale</span>
           <span className="font-black text-rose-600 text-xs">{heatmapStats.avgScore}/100 Average</span>
@@ -1089,16 +1089,16 @@ export const GeospatialMap: React.FC<GeospatialMapProps> = ({
       </div>
 
       {/* Timeline Scrubber Bar (Bottom) */}
-      <div className="bg-white border-t border-slate-200 p-3 px-4 flex items-center justify-between gap-3 text-xs z-10 rounded-b-3xl shadow-xs">
-        <div className="flex items-center gap-2">
+      <div className="bg-white border-t border-slate-200 p-2.5 sm:p-3 px-3 sm:px-4 flex flex-col sm:flex-row sm:items-center justify-between gap-2 sm:gap-3 text-xs z-10 rounded-b-3xl shadow-xs">
+        <div className="flex items-center gap-1.5 sm:gap-2">
           <motion.button
             whileHover={{ scale: 1.03 }}
             whileTap={{ scale: 0.97 }}
             onClick={() => setIsPlayingTimeline(!isPlayingTimeline)}
-            className="px-3 py-1.5 rounded-xl bg-sky-600 hover:bg-sky-700 text-white font-bold text-xs transition-colors cursor-pointer shadow-xs flex items-center gap-1.5"
+            className="px-2.5 sm:px-3 py-1.5 rounded-xl bg-sky-600 hover:bg-sky-700 text-white font-bold text-xs transition-colors cursor-pointer shadow-xs flex items-center gap-1"
           >
             {isPlayingTimeline ? <PauseRounded fontSize="small" /> : <PlayArrowRounded fontSize="small" />}
-            <span>{isPlayingTimeline ? "Pause" : "Play Storm Motion"}</span>
+            <span>{isPlayingTimeline ? "Pause" : "Play Motion"}</span>
           </motion.button>
           <motion.button
             whileHover={{ scale: 1.03 }}

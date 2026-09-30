@@ -62,13 +62,13 @@ export const CustomScenarioModal: React.FC<CustomScenarioModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4">
+    <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-end sm:items-center justify-center p-0 sm:p-4">
       <motion.div
         initial={{ opacity: 0, scale: 0.95, y: 10 }}
         animate={{ opacity: 1, scale: 1, y: 0 }}
         exit={{ opacity: 0, scale: 0.95, y: 10 }}
         transition={{ duration: 0.25 }}
-        className="bg-white border-2 border-indigo-100 rounded-3xl max-w-lg w-full p-6 text-xs font-sans space-y-4 text-slate-700 shadow-2xl"
+        className="bg-white border-t-2 sm:border-2 border-indigo-100 rounded-t-3xl sm:rounded-3xl max-w-lg w-full max-h-[90vh] overflow-y-auto p-4 sm:p-6 text-xs font-sans space-y-4 text-slate-700 shadow-2xl"
       >
         {/* Header */}
         <div className="flex items-center justify-between border-b border-slate-100 pb-3">

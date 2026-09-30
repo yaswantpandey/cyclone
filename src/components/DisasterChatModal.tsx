@@ -94,13 +94,13 @@ export const DisasterChatModal: React.FC<DisasterChatModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4">
+    <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-end sm:items-center justify-center p-0 sm:p-4">
       <motion.div
         initial={{ opacity: 0, scale: 0.95, y: 10 }}
         animate={{ opacity: 1, scale: 1, y: 0 }}
         exit={{ opacity: 0, scale: 0.95, y: 10 }}
         transition={{ duration: 0.25 }}
-        className="bg-white border-2 border-sky-100 rounded-3xl max-w-2xl w-full h-[600px] flex flex-col overflow-hidden text-xs font-sans shadow-2xl"
+        className="bg-white border-t-2 sm:border-2 border-sky-100 rounded-t-3xl sm:rounded-3xl max-w-2xl w-full h-[88vh] sm:h-[600px] flex flex-col overflow-hidden text-xs font-sans shadow-2xl"
       >
         {/* Header */}
         <div className="p-4 border-b border-slate-100 flex items-center justify-between bg-sky-50/70">
