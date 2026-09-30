@@ -1,0 +1,91 @@
+@import "tailwindcss";
+
+@layer base {
+  body {
+    background-color: #f1f6fb;
+    color: #1e293b;
+    font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+  }
+}
+
+/* Friendly Leaflet Map & Tooltips */
+.custom-map-tooltip {
+  background: #ffffff;
+  border: 2px solid #0284c7;
+  color: #0f172a;
+  border-radius: 12px;
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 600;
+  padding: 8px 12px;
+  box-shadow: 0 4px 14px rgba(2, 132, 199, 0.15);
+}
+.custom-map-tooltip:before {
+  border-top-color: #0284c7 !important;
+}
+
+.custom-heat-tooltip {
+  background: #ffffff;
+  border: 2px solid #ef4444;
+  color: #0f172a;
+  border-radius: 12px;
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 600;
+  padding: 10px 14px;
+  box-shadow: 0 6px 20px rgba(239, 68, 68, 0.2);
+}
+.custom-heat-tooltip:before {
+  border-top-color: #ef4444 !important;
+}
+
+/* Pulsing animated border for infrastructure icons exceeding risk threshold (>80/100) */
+@keyframes friendlyPulse {
+  0% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7);
+  }
+  50% {
+    transform: scale(1.08);
+    box-shadow: 0 0 0 8px rgba(239, 68, 68, 0.25);
+  }
+  100% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7);
+  }
+}
+
+.infra-border-pulse-high {
+  animation: friendlyPulse 1.5s ease-in-out infinite !important;
+}
+
+@keyframes friendlyRippleWave {
+  0% {
+    transform: scale(1);
+    opacity: 0.8;
+  }
+  100% {
+    transform: scale(1.8);
+    opacity: 0;
+  }
+}
+
+.infra-border-ripple {
+  animation: friendlyRippleWave 1.8s cubic-bezier(0, 0.2, 0.8, 1) infinite;
+}
+
+/* Clean, colorful custom scrollbar */
+::-webkit-scrollbar {
+  width: 7px;
+  height: 7px;
+}
+::-webkit-scrollbar-track {
+  background: #f1f5f9;
+}
+::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 9999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}

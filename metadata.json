@@ -1,0 +1,6 @@
+{
+  "name": "CycloneWatch: Anticipatory Impact & Infrastructure Vulnerability Forecaster",
+  "description": "Predictive cyclone storm surge, rainfall damage pathway, and critical infrastructure vulnerability modeling platform powered by GEE satellite feeds and anticipatory disaster dispatches.",
+  "requestFramePermissions": ["geolocation"],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
