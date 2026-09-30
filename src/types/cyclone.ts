@@ -65,12 +65,48 @@ export interface SurgeMetrics {
   highestRiskSectors: { sector: string; surgeM: number; risk: "Extreme" | "Severe" | "Moderate" }[];
 }
 
+export interface RiverBasinAlert {
+  river: string;
+  stationName: string;
+  district: string;
+  state: string;
+  coordinates: [number, number]; // [lat, lng]
+  currentLevelM: number;
+  dangerLevelM: number;
+  highestFloodLevelM: number;
+  trend: "Rising" | "Falling" | "Steady";
+  status: "Breaching" | "Critical" | "Warning" | "Normal";
+  isRedZone: boolean;
+  groundIssues: string[]; // "kaha pe kya dikkat hai"
+  maroonedVillagesCount: number;
+  affectedPopulation: number;
+  rescueAction: string;
+}
+
+export interface RedAlertZone {
+  id: string;
+  zoneName: string;
+  district: string;
+  state: string;
+  status: "RED ALERT" | "ORANGE WATCH" | "HIGH ALERT";
+  severity: "Extreme Flooding" | "River Breach & Flash Flood" | "Tidal Saline Inundation";
+  riversInvolved: string[];
+  keyIssues: string;
+  affectedBlocks: string[];
+  coordinates: [number, number][]; // Polygon coordinates
+  evacuatedPeople: number;
+  ndrfTeams: number;
+}
+
 export interface RainfallMetrics {
   cumulativeRainfallMm: number;
   peakRateMmPerHour: number;
   soilSaturationPercent: number;
-  riverBasinAlerts: { river: string; currentLevelM: number; dangerLevelM: number; status: "Breaching" | "Critical" | "Warning" }[];
-  flashFloodChokePoints: { location: string; elevationM: number; riskLevel: "Critical" | "High" }[];
+  riverBasinAlerts: RiverBasinAlert[];
+  flashFloodChokePoints: { location: string; elevationM: number; riskLevel: "Critical" | "High"; issues?: string }[];
+  redAlertZones?: RedAlertZone[];
+  totalBreachingRiversCount?: number;
+  totalMaroonedPeople?: number;
 }
 
 export type InfrastructureType = "power_substation" | "arterial_highway" | "hospital_shelter" | "water_facility" | "telecom_tower";

@@ -303,6 +303,36 @@ export default function App() {
 
       {/* Main Command Workspace */}
       <main className="flex-1 max-w-7xl w-full mx-auto px-3 sm:px-6 py-3 sm:py-6 space-y-4 sm:space-y-5 pb-24 sm:pb-8">
+        {/* 🚨 LIVE HIGH ALERT RED ZONE FLOOD TICKER */}
+        {(rainfallMetrics.totalBreachingRiversCount || 0) > 0 && (
+          <div className="p-3 sm:p-3.5 rounded-2xl bg-gradient-to-r from-rose-600 via-red-600 to-amber-600 text-white shadow-md flex flex-col sm:flex-row sm:items-center justify-between gap-3 border border-rose-400">
+            <div className="flex items-center gap-2.5">
+              <span className="p-1.5 bg-white/20 rounded-xl text-lg animate-pulse shrink-0">
+                🚨
+              </span>
+              <div>
+                <div className="flex items-center gap-2 flex-wrap">
+                  <span className="bg-white text-rose-700 text-[10px] font-black px-2 py-0.5 rounded-full uppercase tracking-wider">
+                    CWC RED ZONE HIGH ALERT
+                  </span>
+                  <span className="text-xs font-black text-white">
+                    5 Rivers Over Danger Mark: Baitarani (+1.15m), Budhabalanga (+0.49m), Subarnarekha
+                  </span>
+                </div>
+                <p className="text-[11px] text-rose-100 mt-0.5">
+                  Over 120 villages marooned across Bhadrak, Balasore & Purba Medinipur. Embankments cracked, NH-16 submerged, 26 NDRF teams active.
+                </p>
+              </div>
+            </div>
+            <button
+              onClick={() => setActiveTab("rainfall")}
+              className="px-3.5 py-1.5 bg-white hover:bg-rose-50 text-rose-700 text-xs font-black rounded-xl transition-all shadow-xs shrink-0 self-start sm:self-auto cursor-pointer"
+            >
+              View Flood Red Zones →
+            </button>
+          </div>
+        )}
+
         {/* Friendly Storm Alert Banner */}
         <div className="bg-white border-2 border-sky-100 rounded-2xl p-4 sm:p-5 shadow-xs flex flex-col lg:flex-row items-start lg:items-center justify-between gap-4">
           <div className="flex items-center gap-3.5">

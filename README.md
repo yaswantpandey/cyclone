@@ -27,9 +27,12 @@ Powered by **Three.js** 3D visualization, **Leaflet** geospatial maps, **Google 
 - **Interactive Storm Anatomy**: Clickable 3D markers for **The Calm Eye**, **Violent Eyewall**, **Outer Rainbands**, and **Storm Surge Swell** with kid-friendly explanations.
 - **Live Simulator Controls**: Toggle ocean wireframes, adjust playback speed (0.5x, 1x, 2x), and dynamically slide wind speed to see storm physics in action.
 
-### 2. 🗺️ Geospatial Forecast Map (Leaflet & CartoDB Voyager)
+### 2. 🗺️ Geospatial Forecast Map (Leaflet & OpenStreetMap)
 - **Forecast Track & Cone of Uncertainty**: 72-hour forecast projection with historical points, future nodes, and wind radii isotachs (34 kt, 50 kt, 64 kt).
-- **CartoDB Voyager Basemap**: Bright, cheerful, and legible map styling tailored for family viewing.
+- **OpenStreetMap (OSM) Live Basemaps**: Powered by OpenStreetMap community tiles with instant style switching between:
+  - 🗺️ **OSM Standard**: Crisp, highly detailed official community street and coastline cartography.
+  - 🚑 **OSM Humanitarian (HOT)**: High-contrast relief and infrastructure styling built for disaster response operations.
+  - 🏔️ **OSM Topo (OpenTopoMap)**: Elevation contour lines and topographical terrain shading.
 - **Google Earth Engine (GEE) Satellite Layers**: Toggleable synthetic flood extent, coastal bathymetry, and satellite radar overlays.
 - **Critical Lifeline Pins**: Interactive markers for community hospitals, safe evacuation shelters, electrical substations, and clear evacuation arteries.
 - **Interactive Timeline Scrubber**: Step through forecast hours (-24h past to +48h post-landfall) to observe wind field and surge progressions.

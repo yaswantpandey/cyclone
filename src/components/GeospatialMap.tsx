@@ -23,6 +23,52 @@ import {
 } from "../types/cyclone";
 import { INITIAL_GEE_LAYERS } from "../data/cycloneScenarios";
 
+export type OsmStyleKey = "osm-standard" | "osm-hot" | "osm-topo";
+
+export interface OsmConfig {
+  name: string;
+  shortName: string;
+  url: string;
+  maxZoom: number;
+  subdomains?: string;
+  attribution: string;
+  badge: string;
+  description: string;
+}
+
+export const OSM_STYLES: Record<OsmStyleKey, OsmConfig> = {
+  "osm-standard": {
+    name: "OpenStreetMap Standard",
+    shortName: "OSM Standard",
+    url: "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
+    maxZoom: 19,
+    subdomains: "abc",
+    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener noreferrer">OpenStreetMap</a> contributors',
+    badge: "Official",
+    description: "Standard crowd-sourced OpenStreetMap basemap tiles",
+  },
+  "osm-hot": {
+    name: "OpenStreetMap Humanitarian (HOT)",
+    shortName: "OSM Disaster",
+    url: "https://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png",
+    maxZoom: 19,
+    subdomains: "abc",
+    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener noreferrer">OpenStreetMap</a> contributors, Tiles style by <a href="https://www.hotosm.org/" target="_blank" rel="noopener noreferrer">Humanitarian OpenStreetMap Team</a>',
+    badge: "Emergency",
+    description: "High-contrast roads, shelters & emergency relief styling",
+  },
+  "osm-topo": {
+    name: "OpenTopoMap (Topographic Contours)",
+    shortName: "OSM Topo",
+    url: "https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png",
+    maxZoom: 17,
+    subdomains: "abc",
+    attribution: 'Map data: &copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener noreferrer">OpenStreetMap</a> contributors, SRTM | Map style: &copy; <a href="https://opentopomap.org" target="_blank" rel="noopener noreferrer">OpenTopoMap</a>',
+    badge: "Elevation",
+    description: "Terrain contours, ridges & coastal elevation shading",
+  },
+};
+
 export interface GeospatialMapProps {
   cyclone: CycloneSystem;
   geeLayers?: GEELayer[];
@@ -76,6 +122,9 @@ export const GeospatialMap: React.FC<GeospatialMapProps> = ({
   const mapContainerRef = useRef<HTMLDivElement>(null);
   const mapInstanceRef = useRef<L.Map | null>(null);
   const layerGroupRef = useRef<L.LayerGroup | null>(null);
+  const tileLayerRef = useRef<L.TileLayer | null>(null);
+  const [selectedOsmStyle, setSelectedOsmStyle] = useState<OsmStyleKey>("osm-standard");
+  const [showRedAlertFloodZones, setShowRedAlertFloodZones] = useState<boolean>(true);
 
   // Fallbacks for optional props
   const [internalGeeLayers, setInternalGeeLayers] = useState<GEELayer[]>(INITIAL_GEE_LAYERS);
@@ -262,7 +311,7 @@ export const GeospatialMap: React.FC<GeospatialMapProps> = ({
     return calculatedRisks.filter((r) => r.finalScore > pulseThreshold).length;
   }, [calculatedRisks, pulseThreshold]);
 
-  // Initialize Leaflet Map
+  // Initialize Leaflet Map with OpenStreetMap
   useEffect(() => {
     if (!mapContainerRef.current) return;
 
@@ -274,10 +323,15 @@ export const GeospatialMap: React.FC<GeospatialMapProps> = ({
         attributionControl: false,
       });
 
-      L.tileLayer("https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png", {
-        maxZoom: 18,
-        subdomains: "abcd",
+      const config = OSM_STYLES[selectedOsmStyle] || OSM_STYLES["osm-standard"];
+      const tileLayer = L.tileLayer(config.url, {
+        maxZoom: config.maxZoom,
+        subdomains: config.subdomains || "abc",
+        attribution: config.attribution,
       }).addTo(map);
+
+      tileLayer.bringToBack();
+      tileLayerRef.current = tileLayer;
 
       const layerGroup = L.layerGroup().addTo(map);
       layerGroupRef.current = layerGroup;
@@ -291,6 +345,26 @@ export const GeospatialMap: React.FC<GeospatialMapProps> = ({
       }
     };
   }, []);
+
+  // Handle dynamic OpenStreetMap base style change
+  useEffect(() => {
+    const map = mapInstanceRef.current;
+    if (!map) return;
+
+    if (tileLayerRef.current) {
+      map.removeLayer(tileLayerRef.current);
+    }
+
+    const config = OSM_STYLES[selectedOsmStyle] || OSM_STYLES["osm-standard"];
+    const tileLayer = L.tileLayer(config.url, {
+      maxZoom: config.maxZoom,
+      subdomains: config.subdomains || "abc",
+      attribution: config.attribution,
+    }).addTo(map);
+
+    tileLayer.bringToBack();
+    tileLayerRef.current = tileLayer;
+  }, [selectedOsmStyle]);
 
   // Update map contents
   useEffect(() => {
@@ -700,7 +774,136 @@ export const GeospatialMap: React.FC<GeospatialMapProps> = ({
       marker.addTo(group);
     });
 
-    // 8. Cyclone Eye Center Marker (Clean Meteorological Crosshair)
+    // 8. 🚨 Real River Flood Red Alert Zones & Gauging Stations
+    if (showRedAlertFloodZones) {
+      const redZones = rainfallMetrics?.redAlertZones || [];
+      const riverAlerts = rainfallMetrics?.riverBasinAlerts || [];
+
+      // A. Real Red Alert Zone Polygons
+      redZones.forEach((zone) => {
+        const polygon = L.polygon(zone.coordinates as L.LatLngExpression[], {
+          color: "#dc2626",
+          weight: 2.5,
+          dashArray: "6, 6",
+          fillColor: "#ef4444",
+          fillOpacity: 0.18,
+        });
+
+        polygon.bindPopup(`
+          <div style="font-family: inherit; font-size: 12px; max-width: 270px; line-height: 1.4;">
+            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 4px;">
+              <span style="background: #dc2626; color: #fff; font-weight: 900; font-size: 10px; padding: 2px 7px; border-radius: 9999px;">
+                ${zone.status}
+              </span>
+              <span style="color: #64748b; font-size: 11px; font-weight: bold;">${zone.district}, ${zone.state}</span>
+            </div>
+            <div style="font-weight: 900; color: #0f172a; font-size: 13px; margin-bottom: 2px;">
+              ${zone.zoneName}
+            </div>
+            <div style="color: #dc2626; font-size: 11px; font-weight: bold; margin-bottom: 6px;">
+              ⚠️ ${zone.severity}
+            </div>
+            <div style="background: #fef2f2; border: 1px solid #fecaca; border-radius: 8px; padding: 6px 8px; margin-bottom: 6px; font-size: 11px; color: #991b1b;">
+              <strong>Kya Dikkat Hai:</strong><br/>
+              ${zone.keyIssues}
+            </div>
+            <div style="font-size: 10px; color: #475569; margin-bottom: 4px;">
+              <strong>Swollen Rivers:</strong> ${zone.riversInvolved.join(", ")}<br/>
+              <strong>Cut-Off Blocks:</strong> ${zone.affectedBlocks.join(", ")}
+            </div>
+            <div style="display: flex; justify-content: space-between; font-size: 10px; font-weight: bold; border-top: 1px solid #e2e8f0; padding-top: 5px; color: #1e293b;">
+              <span>👥 ${zone.evacuatedPeople.toLocaleString()} Evacuated</span>
+              <span style="color: #059669;">🛡️ ${zone.ndrfTeams} NDRF Teams Active</span>
+            </div>
+          </div>
+        `, { maxWidth: 300 });
+
+        polygon.bindTooltip(`
+          <strong>🚨 ${zone.zoneName}</strong><br/>
+          <span style="color: #dc2626; font-weight: bold;">${zone.severity}</span> · Evacuated: ${zone.evacuatedPeople.toLocaleString()}
+        `, { className: "custom-heat-tooltip" });
+
+        polygon.addTo(group);
+      });
+
+      // B. Live CWC River Flood Gauge Stations with Pulsing Beacons
+      riverAlerts.forEach((river) => {
+        const delta = parseFloat((river.currentLevelM - river.dangerLevelM).toFixed(2));
+        const isBreaching = river.status === "Breaching" || delta > 0;
+        const beaconColor = isBreaching ? "#dc2626" : "#f59e0b";
+
+        const beaconHtml = `
+          <div style="position: relative; width: 34px; height: 34px; display: flex; align-items: center; justify-content: center; cursor: pointer;">
+            ${isBreaching ? `
+              <div style="position: absolute; width: 100%; height: 100%; border-radius: 9999px; background: ${beaconColor}; opacity: 0.6; animation: ping 1.2s cubic-bezier(0, 0, 0.2, 1) infinite;"></div>
+            ` : ""}
+            <div style="width: 28px; height: 28px; border-radius: 9999px; background: ${beaconColor}; border: 2.5px solid #fff; box-shadow: 0 4px 10px rgba(0,0,0,0.35); display: flex; align-items: center; justify-content: center; color: #fff; font-weight: 900; font-size: 14px;">
+              🌊
+            </div>
+            <div style="position: absolute; -bottom: 6px; background: #0f172a; color: #fff; font-size: 9px; font-weight: 800; padding: 1px 4px; border-radius: 4px; white-space: nowrap; box-shadow: 0 2px 4px rgba(0,0,0,0.25);">
+              ${river.currentLevelM}m
+            </div>
+          </div>
+        `;
+
+        const icon = L.divIcon({
+          html: beaconHtml,
+          className: "river-flood-marker",
+          iconSize: [34, 34],
+          iconAnchor: [17, 17],
+        });
+
+        const marker = L.marker(river.coordinates, { icon });
+        marker.bindPopup(`
+          <div style="font-family: inherit; font-size: 12px; max-width: 280px; line-height: 1.4;">
+            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 4px;">
+              <span style="background: ${isBreaching ? "#dc2626" : "#f59e0b"}; color: #fff; font-weight: 900; font-size: 10px; padding: 2px 6px; border-radius: 9999px;">
+                ${isBreaching ? "🚨 BREACHING DANGER MARK" : "⚠️ WARNING LEVEL"}
+              </span>
+              <span style="color: #64748b; font-size: 11px; font-weight: bold;">${river.district}</span>
+            </div>
+            <div style="font-weight: 900; color: #0f172a; font-size: 14px; margin-bottom: 2px;">
+              ${river.river}
+            </div>
+            <div style="color: #64748b; font-size: 11px; margin-bottom: 6px;">
+              Station: <strong>${river.stationName}</strong> (${river.state})
+            </div>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 4px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 6px; margin-bottom: 6px; text-align: center;">
+              <div>
+                <div style="font-size: 9px; color: #64748b; text-transform: uppercase;">Water Level</div>
+                <div style="font-weight: 900; font-size: 13px; color: ${isBreaching ? "#dc2626" : "#0f172a"};">${river.currentLevelM}m</div>
+                <div style="font-size: 9px; color: #dc2626; font-weight: bold;">${delta > 0 ? `+${delta}m Over Danger` : "Safe"}</div>
+              </div>
+              <div style="border-left: 1px solid #cbd5e1;">
+                <div style="font-size: 9px; color: #64748b; text-transform: uppercase;">Danger Mark</div>
+                <div style="font-weight: 900; font-size: 13px; color: #64748b;">${river.dangerLevelM}m</div>
+                <div style="font-size: 9px; color: #475569;">CWC Threshold</div>
+              </div>
+            </div>
+            <div style="background: #fef2f2; border: 1px solid #fecaca; border-radius: 8px; padding: 6px; margin-bottom: 6px; font-size: 11px; color: #991b1b;">
+              <strong>Kya Dikkat Hai:</strong><br/>
+              ${(river.groundIssues || []).slice(0, 2).map((iss: string) => `• ${iss}`).join("<br/>")}
+            </div>
+            <div style="font-size: 10px; color: #334155; margin-bottom: 4px;">
+              <strong>Marooned Villages:</strong> ${river.maroonedVillagesCount} villages (${river.affectedPopulation.toLocaleString()} people)
+            </div>
+            <div style="font-size: 10px; color: #059669; font-weight: bold; border-top: 1px solid #e2e8f0; padding-top: 4px;">
+              🛡️ ${river.rescueAction}
+            </div>
+          </div>
+        `, { maxWidth: 300 });
+
+        marker.bindTooltip(`
+          <strong>🌊 ${river.river} (${river.stationName})</strong><br/>
+          Level: <strong style="color: ${isBreaching ? "#dc2626" : "#f59e0b"};">${river.currentLevelM}m</strong> (${delta > 0 ? `+${delta}m Over Danger` : "Near Danger"})<br/>
+          ${isBreaching ? "🚨 RED ZONE - BREACHING" : "⚠️ WARNING"}
+        `, { className: "custom-map-tooltip" });
+
+        marker.addTo(group);
+      });
+    }
+
+    // 9. Cyclone Eye Center Marker (Clean Meteorological Crosshair)
     const eyeIconHtml = `
       <div style="position: relative; width: 36px; height: 36px; display: flex; align-items: center; justify-content: center;">
         <div style="position: absolute; width: 36px; height: 36px; border-radius: 50%; border: 1.5px solid #ef4444; opacity: 0.7;"></div>
@@ -748,6 +951,8 @@ export const GeospatialMap: React.FC<GeospatialMapProps> = ({
     heatmapStats,
     onToggleHardening,
     pulseThreshold,
+    showRedAlertFloodZones,
+    rainfallMetrics,
   ]);
 
   // Timeline playback loop
@@ -853,6 +1058,44 @@ export const GeospatialMap: React.FC<GeospatialMapProps> = ({
           <LocalFireDepartmentRounded fontSize="inherit" />
           <span>Heatmap</span>
         </motion.button>
+        {/* Real River Flood Red Alert Zones Button */}
+        <motion.button
+          whileHover={{ scale: 1.03 }}
+          whileTap={{ scale: 0.97 }}
+          onClick={() => setShowRedAlertFloodZones(!showRedAlertFloodZones)}
+          className={`px-2.5 sm:px-3 py-1 rounded-xl border-2 flex items-center justify-center gap-1.5 transition-all text-xs font-black cursor-pointer shadow-xs ${
+            showRedAlertFloodZones
+              ? "bg-rose-600 border-rose-700 text-white shadow-rose-200 shadow-md"
+              : "bg-white border-slate-200 text-slate-700 hover:bg-slate-50"
+          }`}
+          title="Toggle Real River Flood Red Zones & CWC Gauging Stations"
+        >
+          <span>🚨</span>
+          <span className="hidden sm:inline">Flood Red Zones</span>
+          <span className="sm:hidden">Red Zones</span>
+          {showRedAlertFloodZones && (
+            <span className="w-1.5 h-1.5 rounded-full bg-white animate-ping" />
+          )}
+        </motion.button>
+        {/* OpenStreetMap Quick Style Switcher */}
+        <div className="hidden sm:flex items-center bg-white border-2 border-slate-200 rounded-xl px-2 py-1 text-xs shadow-xs">
+          <span className="text-slate-600 font-bold mr-1 flex items-center gap-1">
+            <span>🗺️</span>
+            <span className="hidden lg:inline text-[11px] text-slate-500">OSM:</span>
+          </span>
+          <select
+            value={selectedOsmStyle}
+            onChange={(e) => setSelectedOsmStyle(e.target.value as OsmStyleKey)}
+            className="bg-transparent text-slate-800 font-bold focus:outline-none cursor-pointer text-xs"
+            title="Switch OpenStreetMap base layer"
+          >
+            {(Object.keys(OSM_STYLES) as OsmStyleKey[]).map((k) => (
+              <option key={k} value={k}>
+                {OSM_STYLES[k].shortName}
+              </option>
+            ))}
+          </select>
+        </div>
         <motion.button
           whileHover={{ scale: 1.03 }}
           whileTap={{ scale: 0.97 }}
@@ -886,6 +1129,45 @@ export const GeospatialMap: React.FC<GeospatialMapProps> = ({
           </div>
 
           <div className="overflow-y-auto space-y-2.5 pr-1">
+            {/* OpenStreetMap Base Map Style Selector */}
+            <div className="p-3 rounded-2xl border-2 border-sky-100 bg-sky-50/70 space-y-2">
+              <div className="flex items-center justify-between">
+                <span className="font-bold text-sky-950 text-xs flex items-center gap-1.5">
+                  <span>🗺️</span>
+                  <span>OpenStreetMap Basemap</span>
+                </span>
+                <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-sky-200/80 text-sky-800">
+                  Live OSM
+                </span>
+              </div>
+              <div className="grid grid-cols-3 gap-1.5 pt-1">
+                {(Object.keys(OSM_STYLES) as OsmStyleKey[]).map((key) => {
+                  const item = OSM_STYLES[key];
+                  const isSelected = selectedOsmStyle === key;
+                  return (
+                    <button
+                      key={key}
+                      onClick={() => setSelectedOsmStyle(key)}
+                      className={`px-2 py-1.5 rounded-xl text-[10px] font-bold transition-all text-center flex flex-col items-center justify-center cursor-pointer border ${
+                        isSelected
+                          ? "bg-sky-600 text-white border-sky-700 shadow-xs"
+                          : "bg-white text-slate-700 hover:bg-slate-100 border-slate-200"
+                      }`}
+                    >
+                      <span className="truncate w-full leading-tight">{item.shortName}</span>
+                      <span className={`text-[8px] mt-0.5 opacity-90 ${isSelected ? "text-sky-100" : "text-slate-400"}`}>
+                        {item.badge}
+                      </span>
+                    </button>
+                  );
+                })}
+              </div>
+              <div className="text-[10px] text-slate-500 pt-0.5 flex items-center justify-between">
+                <span>© OpenStreetMap contributors</span>
+                <span className="text-[9px] text-sky-700 font-bold">ODbL</span>
+              </div>
+            </div>
+
             {/* Vulnerability Heatmap Controller */}
             <div className="p-3 rounded-2xl border-2 border-rose-100 bg-rose-50/50">
               <div className="flex items-center justify-between">
@@ -1001,6 +1283,16 @@ export const GeospatialMap: React.FC<GeospatialMapProps> = ({
             {/* Weather Features Toggles */}
             <div className="pt-2 border-t border-slate-100 flex flex-wrap gap-1.5">
               <button
+                onClick={() => setShowRedAlertFloodZones(!showRedAlertFloodZones)}
+                className={`px-3 py-1 rounded-xl text-xs font-bold border transition-colors cursor-pointer ${
+                  showRedAlertFloodZones
+                    ? "bg-rose-600 text-white border-rose-700 shadow-xs"
+                    : "bg-white text-slate-700 border-slate-200 hover:bg-slate-50"
+                }`}
+              >
+                🚨 River Flood Red Zones
+              </button>
+              <button
                 onClick={() => setShowConeOfUncertainty(!showConeOfUncertainty)}
                 className={`px-3 py-1 rounded-xl text-xs font-bold border transition-colors cursor-pointer ${
                   showConeOfUncertainty
@@ -1053,6 +1345,23 @@ export const GeospatialMap: React.FC<GeospatialMapProps> = ({
           </div>
         </div>
       )}
+
+      {/* OpenStreetMap Attribution & Style Badge (Bottom-Left) */}
+      <div className="absolute bottom-16 sm:bottom-20 left-3 z-10 bg-white/95 backdrop-blur-xs border border-slate-200 rounded-xl px-2.5 py-1 text-[11px] text-slate-700 shadow-md flex items-center gap-1.5 pointer-events-auto">
+        <span className="font-extrabold text-sky-800 flex items-center gap-1">
+          <span>🗺️</span>
+          <span>{OSM_STYLES[selectedOsmStyle]?.shortName || "OpenStreetMap"}</span>
+        </span>
+        <span className="text-slate-300">|</span>
+        <a
+          href="https://www.openstreetmap.org/copyright"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-slate-500 hover:text-sky-600 underline font-medium"
+        >
+          © OSM Contributors
+        </a>
+      </div>
 
       {/* Floating Telemetry Legend Bar (Bottom-Right) */}
       <div className="hidden sm:flex absolute bottom-16 right-3 z-10 bg-white/95 backdrop-blur-xs border-2 border-slate-200 rounded-2xl p-3 text-xs flex-col gap-1.5 max-w-xs shadow-lg">
